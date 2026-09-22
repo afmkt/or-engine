@@ -8,7 +8,7 @@ from .amap import (
     # -- driving direction models --
     CityInfo,
     Cost,
-    DirectionDrivingResponse,
+    DirectionResponse,
     District,
     Navi,
     Path,
@@ -18,6 +18,7 @@ from .amap import (
     # -- geocoding models --
     Geocode,
     GeocodeResponse,
+    TransportMode,
 )
 
 __all__ = [
@@ -28,7 +29,7 @@ __all__ = [
     # driving direction
     "CityInfo",
     "Cost",
-    "DirectionDrivingResponse",
+    "DirectionResponse",
     "District",
     "Navi",
     "Path",
@@ -38,4 +39,5 @@ __all__ = [
     # geocoding
     "Geocode",
     "GeocodeResponse",
+    "TransportMode",
 ]

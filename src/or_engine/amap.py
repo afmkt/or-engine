@@ -3,7 +3,7 @@
 Public classes:
     Point2D              — coordinate type, shared by requests and responses
     Geocode / GeocodeResponse      — geocoding API
-    DirectionDrivingResponse  / ... — driving-direction API
+    DirectionResponse  / ... — driving-direction API
     AmapClient           — async HTTP client, wraps both APIs
 """
 
@@ -13,7 +13,16 @@ import json
 
 import httpx
 from pydantic import BaseModel, model_validator
-from typing import Any
+from typing import Any, Sequence
+from enum import StrEnum
+
+
+class TransportMode(StrEnum):
+    WALKING = "walking"
+    DRIVING = "driving"
+    BICYCLING = "bicycling"
+    ELECTROBIKE = "electrobike"
+    TRANSIT = "transit/integrated"
 
 
 # ---------------------------------------------------------------------------
@@ -36,7 +45,7 @@ class Point2D(BaseModel):
     # -- construction helpers -------------------------------------------------
 
     @classmethod
-    def from_str(cls, s: str) -> "Point2D":
+    def from_str(cls, s: str) -> Point2D:
         """Parse the 'lng,lat' string that Amap returns."""
         parts = s.split(",")
         if len(parts) != 2:
@@ -61,7 +70,7 @@ class Point2D(BaseModel):
     # Used by every model validator and by API request builders.
 
     @classmethod
-    def coerce(cls, v: Any) -> "Point2D | None":
+    def coerce(cls, v: Any) -> Point2D | None:
         if v is None:
             return None
         if isinstance(v, str):
@@ -76,12 +85,12 @@ class Point2D(BaseModel):
 # ---------------------------------------------------------------------------
 # Direction-driving response models
 # ---------------------------------------------------------------------------
-class DirectionDrivingResponse(BaseModel):
-    status: str            # "1" = success, "0" = failure
-    info: str              # "OK" on success, error message on failure
-    infocode: str          # "10000" on success, error code on failure
-    count: str             # total number of route plans, as string
-    route: "Route | None" = None
+class DirectionResponse(BaseModel):
+    status: str  # "1" = success, "0" = failure
+    info: str  # "OK" on success, error message on failure
+    infocode: str  # "10000" on success, error code on failure
+    count: str | None = None  # total route plans (absent on error responses)
+    route: Route | None = None
 
     @property
     def success(self) -> bool:
@@ -93,10 +102,10 @@ class DirectionDrivingResponse(BaseModel):
 
 
 class Route(BaseModel):
-    origin: Point2D        # auto-parsed from "lng,lat" via model_validator
-    destination: Point2D   # auto-parsed from "lng,lat" via model_validator
-    taxi_cost: str         # estimated taxi fare in yuan, e.g. "15.00"
-    paths: list["Path"] = []
+    origin: Point2D  # auto-parsed from "lng,lat" via model_validator
+    destination: Point2D  # auto-parsed from "lng,lat" via model_validator
+    taxi_cost: str  # estimated taxi fare in yuan, e.g. "15.00"
+    paths: list[Path] = []
 
     @model_validator(mode="before")
     @classmethod
@@ -110,17 +119,17 @@ class Route(BaseModel):
 
 
 class Path(BaseModel):
-    distance: str          # total distance in metres
-    restriction: str       # "0" = unrestricted, "1" = restricted
+    distance: str  # total distance in metres
+    restriction: str  # "0" = unrestricted, "1" = restricted
 
     # --- fields available when show_fields includes "cost" ---
-    cost: "Cost | None" = None
+    cost: Cost | None = None
     # --- fields available when show_fields includes "tmcs" ---
-    tmcs: "list[Tmc] | None" = None
+    tmcs: list[Tmc] | None = None
     # --- fields available when show_fields includes "cities" ---
-    cities: "list[CityInfo] | None" = None
+    cities: list[CityInfo] | None = None
 
-    steps: list["Step"] = []
+    steps: list[Step] = []
 
     @property
     def distance_meters(self) -> float | None:
@@ -128,11 +137,11 @@ class Path(BaseModel):
 
 
 class Cost(BaseModel):
-    duration: str          # total driving time in seconds
-    tolls: str             # toll fee in yuan
-    toll_distance: str     # total toll road length in metres
-    toll_road: str         # main toll road name
-    traffic_lights: str    # number of traffic lights
+    duration: str  # total driving time in seconds
+    tolls: str  # toll fee in yuan
+    toll_distance: str  # total toll road length in metres
+    toll_road: str = ""      # main toll road name (omitted in route-level cost)
+    traffic_lights: str = ""      # number of traffic lights (sometimes omitted)
 
     @property
     def duration_seconds(self) -> int | None:
@@ -144,9 +153,9 @@ class Cost(BaseModel):
 
 
 class Tmc(BaseModel):
-    tmc_status: str        # "未知" | "畅通" | "缓行" | "拥堵" | "严重拥堵"
-    tmc_distance: str      # distance of this traffic segment in metres
-    tmc_polyline: str      # coordinate poly-line for this segment
+    tmc_status: str  # "未知" | "畅通" | "缓行" | "拥堵" | "严重拥堵"
+    tmc_distance: str  # distance of this traffic segment in metres
+    tmc_polyline: str  # coordinate poly-line for this segment
 
     @property
     def tmc_distance_meters(self) -> float | None:
@@ -162,25 +171,25 @@ class CityInfo(BaseModel):
     adcode: str
     citycode: str
     city: str
-    district: "District | None" = None
+    district: District | None = None
 
 
 class Navi(BaseModel):
-    action: str            # primary navigation action
+    action: str  # primary navigation action
     assistant_action: str  # secondary / assistant navigation action
 
 
 class Step(BaseModel):
     # All string fields default to "" so the model tolerates steps that omit
     # some fields (e.g. tunnel/turn-only steps lack road_name and orientation).
-    instruction:     str = ""   # driving instruction text
-    orientation:     str = ""   # direction when entering the road
-    road_name:       str = ""   # road name (sometimes omitted by the API)
-    step_distance:   str = ""   # distance of this step in metres
+    instruction: str = ""  # driving instruction text
+    orientation: str = ""  # direction when entering the road
+    road_name: str = ""  # road name (sometimes omitted by the API)
+    step_distance: str = ""  # distance of this step in metres
 
     # --- fields available when show_fields includes "navi" / "polyline" ---
-    navi:     "Navi | None" = None
-    polyline: "str | None"   = None   # coordinate points separated by ";"
+    navi: Navi | None = None
+    polyline: str | None = None  # coordinate points separated by ";"
 
     @property
     def step_distance_meters(self) -> float | None:
@@ -189,23 +198,23 @@ class Step(BaseModel):
 
 # Resolve forward references
 Route.model_rebuild()
-DirectionDrivingResponse.model_rebuild()
+DirectionResponse.model_rebuild()
 
 
 # ---------------------------------------------------------------------------
 # Geocode response models
 # ---------------------------------------------------------------------------
 class Geocode(BaseModel):
-    country:    str        = ""
-    province:   str        = ""
-    city:       str        = ""
-    citycode:   str        = ""
-    district:   str        = ""
-    street:     str        = ""
-    number:     str        = ""
-    adcode:     str        = ""
-    location:   "Point2D | None" = None   # auto-parsed from "lng,lat"
-    level:      str        = ""           # 匹配级别, e.g. "门牌号", "道路", "兴趣点"
+    country: str = ""
+    province: str = ""
+    city: str = ""
+    citycode: str = ""
+    district: str = ""
+    street: str = ""
+    number: str = ""
+    adcode: str = ""
+    location: Point2D | None = None  # auto-parsed from "lng,lat"
+    level: str = ""  # 匹配级别, e.g. "门牌号", "道路", "兴趣点"
 
     @model_validator(mode="before")
     @classmethod
@@ -216,9 +225,9 @@ class Geocode(BaseModel):
 
 
 class GeocodeResponse(BaseModel):
-    status:   str             # "0" or "1"
-    info:     str             # "OK" or error message
-    count:    str             # number of results, as string
+    status: str  # "0" or "1"
+    info: str  # "OK" or error message
+    count: str | None = None  # number of results (absent on error responses)
     geocodes: list[Geocode] = []
 
     @property
@@ -237,18 +246,22 @@ class AmapClient:
     """Async client for the Amap Web Service API."""
 
     def __init__(self, api_key: str, api_base: str = "https://restapi.amap.com"):
-        self.api_key  = api_key
+        self.api_key = api_key
         self.api_base = api_base
 
     def _params(self, path: str, **params: Any) -> tuple[str, dict[str, Any]]:
-        return (f"{self.api_base}{path}", {**params, "key": self.api_key})
+        all = {**params, "key": self.api_key}
+        return (
+            f"{self.api_base}{path}",
+            {k: v for k, v in all.items() if v is not None},
+        )
 
-     # -- geocoding ----------------------------------------------------------
+    # -- geocoding ----------------------------------------------------------
 
     async def geocode_geo(
         self,
         address: str,
-        path: str  = "/v3/geocode/geo",
+        path: str = "/v3/geocode/geo",
         debug: bool = False,
     ) -> GeocodeResponse:
         url, params = self._params(path, address=address)
@@ -259,25 +272,34 @@ class AmapClient:
                 print(json.dumps(raw, indent=2, ensure_ascii=False))
             return GeocodeResponse.model_validate(raw)
 
-     # -- direction (driving) ------------------------------------------------
+    # -- direction (driving) ------------------------------------------------
 
-    async def direction_driving(
+    async def direction(
         self,
-        origin:      "Point2D | str | tuple[float, float] | None",
-        destination: "Point2D | str | tuple[float, float] | None",
-        path: str  = "/v5/direction/driving",
+        transport: TransportMode,
+        origin: Point2D | str | tuple[float, float] | None,
+        destination: Point2D | str | tuple[float, float] | None,
+        path: str = "/v5/direction",
         debug: bool = False,
-    ) -> DirectionDrivingResponse:
-        origin_pnt      = Point2D.coerce(origin)
+        show_fields: frozenset[str] = frozenset(),
+    ) -> DirectionResponse:
+        origin_pnt = Point2D.coerce(origin)
         destination_pnt = Point2D.coerce(destination)
         url, params = self._params(
-            path,
-            origin=origin_pnt.to_str()        if origin_pnt        is not None else None,
-            destination=destination_pnt.to_str() if destination_pnt is not None else None,
+            f"{path}/{transport}",
+            origin=origin_pnt.to_str() if origin_pnt is not None else None,
+            destination=destination_pnt.to_str()
+            if destination_pnt is not None
+            else None,
+            show_fields=",".join(list(show_fields)),
         )
         async with httpx.AsyncClient() as client:
             res = await client.get(url, params=params)
             raw = res.json()
             if debug:
                 print(json.dumps(raw, indent=2, ensure_ascii=False))
-            return DirectionDrivingResponse.model_validate(raw)
+            return DirectionResponse.model_validate(raw)
+
+
+if __name__ == "__main__":
+    pass

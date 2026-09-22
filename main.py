@@ -3,9 +3,10 @@ import os
 
 from dotenv import load_dotenv
 from or_engine import (
+    TransportMode,
     AmapClient,
     Cost,
-    DirectionDrivingResponse,
+    DirectionResponse,
     Geocode,
     GeocodeResponse,
     Path,
@@ -36,16 +37,16 @@ async def main() -> None:
     if not geocode.success:
         raise RuntimeError(
             f"geocode failed: info={geocode.info!r}  infocode={geocode.infocode!r}"
-         )
+        )
 
     for i, geo in enumerate(geocode.geocodes):
         loc = geo.location
         coords = f"{loc.lng}, {loc.lat}" if loc else "n/a"
         print(
-             f"  result {i}: {geo.province} {geo.city} {geo.district}    "
-             f"street={geo.street!r}  number={geo.number!r}    "
-             f"level={geo.level!r}  location={coords}"
-            )
+            f"  result {i}: {geo.province} {geo.city} {geo.district}    "
+            f"street={geo.street!r}  number={geo.number!r}    "
+            f"level={geo.level!r}  location={coords}"
+        )
 
     # Use the first result's coordinate as the driving origin
     origin: Point2D | None = geocode.geocodes[0].location
@@ -55,19 +56,20 @@ async def main() -> None:
     # 2) Direction (driving):  coordinates  ->  route plan
     # ------------------------------------------------------------------
     print("\n=== Direction (driving) ===")
-    destination = Point2D(lng=116.397428, lat=39.909230)   # 故宫博物院
+    destination = Point2D(lng=116.397428, lat=39.909230)  # 故宫博物院
 
-    resp: DirectionDrivingResponse = await client.direction_driving(
+    resp: DirectionResponse = await client.direction(
+        TransportMode.DRIVING,
         origin=origin,
         destination=destination,
-        path="/v5/direction/driving",
-        debug=True,        # remove after confirming the model is correct
-     )
+        show_fields={"cost", "navi", "polyline"},
+        debug=True,  # remove after confirming the model is correct
+    )
 
     if not resp.success:
         raise RuntimeError(
             f"direction failed: info={resp.info!r}  infocode={resp.infocode!r}"
-         )
+        )
 
     route: Route = resp.route
     print(f"  route plans: {len(route.paths)}")
@@ -76,11 +78,13 @@ async def main() -> None:
     print(f"  destination:   {route.destination.to_str()}")
 
     for j, path in enumerate(route.paths):
-        print(f"\n  --- plan {j}  "
-                f"distance={path.distance} m  "
-                f"restriction={path.restriction} ---")
+        print(
+            f"\n  --- plan {j}  "
+            f"distance={path.distance} m  "
+            f"restriction={path.restriction} ---"
+        )
 
-         # cost is Optional[Cost] — present only in show_fields=cost responses
+        # cost is Optional[Cost] — present only in show_fields=cost responses
         if path.cost:
             c: Cost = path.cost
             print(f"       duration         {c.duration} s")
@@ -93,8 +97,10 @@ async def main() -> None:
             navi_str = ""
             if step.navi:
                 navi_str = f"   [action={step.navi.action!r}]"
-            print(f"          {step.instruction:<30s}  "
-                    f"({step.road_name}, {step.step_distance} m){navi_str}")
+            print(
+                f"          {step.instruction:<30s}  "
+                f"({step.road_name}, {step.step_distance} m){navi_str}"
+            )
 
 
 if __name__ == "__main__":
