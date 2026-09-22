@@ -1,0 +1,22 @@
+[project]
+name = "or-engine"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "michael", email = "afmkt1020@proton.me" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "httpx>=0.28.1",
+    "ortools>=9.15.6755",
+    "pydantic>=2.13.5",
+]
+
+[project.scripts]
+or-engine = "or_engine:main"
+
+[build-system]
+requires = ["uv_build>=0.12.2,<0.13.0"]
+build-backend = "uv_build"
