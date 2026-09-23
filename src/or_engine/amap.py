@@ -140,8 +140,8 @@ class Cost(BaseModel):
     duration: str  # total driving time in seconds
     tolls: str  # toll fee in yuan
     toll_distance: str  # total toll road length in metres
-    toll_road: str = ""      # main toll road name (omitted in route-level cost)
-    traffic_lights: str = ""      # number of traffic lights (sometimes omitted)
+    toll_road: str | None = None  # main toll road name (omitted in route-level cost)
+    traffic_lights: str | None = None  # number of traffic lights (sometimes omitted)
 
     @property
     def duration_seconds(self) -> int | None:
@@ -182,10 +182,10 @@ class Navi(BaseModel):
 class Step(BaseModel):
     # All string fields default to "" so the model tolerates steps that omit
     # some fields (e.g. tunnel/turn-only steps lack road_name and orientation).
-    instruction: str = ""  # driving instruction text
-    orientation: str = ""  # direction when entering the road
-    road_name: str = ""  # road name (sometimes omitted by the API)
-    step_distance: str = ""  # distance of this step in metres
+    instruction: str | None = None  # driving instruction text
+    orientation: str | None = None  # direction when entering the road
+    road_name: str | None = None  # road name (sometimes omitted by the API)
+    step_distance: str | None = None  # distance of this step in metres
 
     # --- fields available when show_fields includes "navi" / "polyline" ---
     navi: Navi | None = None
@@ -205,16 +205,16 @@ DirectionResponse.model_rebuild()
 # Geocode response models
 # ---------------------------------------------------------------------------
 class Geocode(BaseModel):
-    country: str = ""
-    province: str = ""
-    city: str = ""
-    citycode: str = ""
-    district: str = ""
-    street: str = ""
-    number: str = ""
-    adcode: str = ""
+    country: str | None = None
+    province: str | None = None
+    city: str | None = None
+    citycode: str | None = None
+    district: str | None = None
+    street: str | None = None
+    number: str | None = None
+    adcode: str | None = None
     location: Point2D | None = None  # auto-parsed from "lng,lat"
-    level: str = ""  # 匹配级别, e.g. "门牌号", "道路", "兴趣点"
+    level: str | None = None  # 匹配级别, e.g. "门牌号", "道路", "兴趣点"
 
     @model_validator(mode="before")
     @classmethod
