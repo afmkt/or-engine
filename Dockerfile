@@ -2,6 +2,11 @@
 
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
+# OR-Tools links against libgomp (OpenMP runtime) which is not in slim images.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends libgomp1 \
+  && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Dependency specs first, so the large install layer is cached even when the
