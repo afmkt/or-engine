@@ -1,0 +1,51 @@
+services:
+     # 1. PostgreSQL with PostGIS Extension
+   db:
+    image: postgis/postgis:16-3.4
+    container_name: postgis_db
+    environment:
+        POSTGRES_DB: geospatial_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    ports:
+        - "5432:5432"
+    volumes:
+        - pgdata:/var/lib/postgresql/data
+    restart: always
+
+     # 2. PostgREST (Serves the REST API directly from Postgres)
+   rest:
+    image: postgrest/postgrest:v12.2.0
+    container_name: postgrest_api
+    ports:
+        - "3000:3000"
+    environment:
+        PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/geospatial_db
+        PGRST_DB_SCHEMA: public
+        PGRST_DB_ANON_ROLE: postgres
+    depends_on:
+        - db
+    restart: always
+
+     # 3. OR Engine — combined REST + MCP server
+   app:
+    build: .
+    container_name: or_engine_app
+    ports:
+        - "8000:8000"
+    environment:
+        AMAP_API_KEY: "${AMAP_API_KEY:-}"
+        PGRST_URL: "http://rest:3000"
+        # PostgREST runs keyless (PGRST_DB_ANON_ROLE=postgres), so no API key is needed.
+    depends_on:
+        - rest
+    restart: always
+    healthcheck:
+        test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status == 200 else 1)"]
+        interval: 30s
+        timeout: 5s
+        start_period: 10s
+        retries: 3
+
+volumes:
+   pgdata:

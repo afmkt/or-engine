@@ -8,14 +8,17 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "dotenv>=0.9.9",
+    "python-dotenv>=1.0.0",
+    "fastapi>=0.141.1",
     "httpx>=0.28.1",
+    "mcp>=2.2.0",
     "ortools>=9.15.6755",
     "pydantic>=2.13.5",
+    "uvicorn>=0.54.0",
 ]
 
 [project.scripts]
-or-engine = "or_engine:main"
+or-engine = "or_engine.server:main"
 
 [build-system]
 requires = ["uv_build>=0.12.2,<0.13.0"]
