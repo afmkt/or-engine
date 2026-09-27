@@ -13,8 +13,8 @@
 #        then set ALIYUN_USERNAME / ALIYUN_PASSWORD in
 #          repo → Settings → Secrets and variables → Actions.
 #
-# Triggered by version tags (v1.2.3); workflow_dispatch pushes
-# `latest` + short-SHA tags without a version tag.
+# Triggered on every push to any branch, plus version tags (v1.2.3).
+# workflow_dispatch also available for manual runs.
 #
 # NOTE: the first push creates the GHCR package as PRIVATE. Make it public
 # once:  github.com/<owner>/packages/container/or-engine/settings → Public
@@ -24,6 +24,7 @@ name: Release Docker
 
 on:
   push:
+    branches: ["**"]
     tags: ["v*"]
   workflow_dispatch:
 
