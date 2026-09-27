@@ -1,0 +1,33 @@
+# Janux base configuration — single-host, Caddy front.
+#
+# Copy to base.toml and adjust:
+#   cp base.example.toml base.toml
+#
+# Then run the full stack:
+#   cd compose && docker compose up -d
+#
+# ── Encryption key ──────────────────────────────────────
+# 64 hex chars = 32 bytes (AES-256-GCM).
+# RECOVERY-CRITICAL: encrypts at-rest secrets (signing keys, social
+# provider secrets, TOTP, email/SMS delivery keys).
+# Generate a new one with:
+#   openssl rand -hex 32
+
+
+data_dir = "./data"
+
+# FIXME: replace with `openssl rand -hex 32` before production use.
+encryption_key = "PLACEHOLDER_ENCRYPTION_KEY_64CHARS_0123456789abcdef0123456789abcdef"
+
+# TRUE: Caddy overwrites X-Forwarded-* so janux can resolve the tenant
+# from Host / X-Forwarded-Host and evaluate the forward-auth policy
+# against the PROXIED path (X-Forwarded-Uri / X-Forwarded-Method).
+trust_forwarded_headers = true
+
+# When an UNAUTHENTICATED forward_auth probe reaches janux, return 303 → /login
+# so a browser is bounced to the hosted login page instead of a bare 401.
+forward_auth_redirect = true
+
+[bind]
+address = "0.0.0.0"
+port = 8080

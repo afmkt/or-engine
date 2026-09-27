@@ -1,0 +1,36 @@
+# Top-level orchestrator — runs the entire stack.
+#
+# Usage from the `compose/` directory:
+#   docker compose up -d        # full stack
+#   docker compose down         # tear everything down
+#
+# Individual components can also be started alone, e.g.
+#   docker compose -f postgis/compose.yml up -d
+# but that requires the network to be created by the stack first
+# (or pass --network or-engine_stack_default).
+
+name: or-engine
+
+services: {}  # all services are pulled in via include below
+
+include:
+   - ./postgis/compose.yml
+   - ./postgrest/compose.yml
+   - ./or-engine/compose.yml
+   - ./janux/compose.yml
+   - ./caddy/compose.yml
+
+# Fixed bridge subnet for deterministic service addressing.
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+            - subnet: 172.28.0.0/16
+
+volumes:
+  pgdata:
+  janux_data:
+  caddy_config:
+  caddy_data:

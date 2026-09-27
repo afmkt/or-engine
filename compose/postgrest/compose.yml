@@ -1,0 +1,35 @@
+# PostgREST — serves a REST API directly from the Postgres/PostGIS database.
+#
+# Run with the full stack:
+#   cd compose && docker compose up -d
+
+name: or-engine-postgrest
+
+services:
+  rest:
+    image: postgrest/postgrest:v12.2.0
+    container_name: postgrest_api
+    restart: unless-stopped
+    ports:
+        - "3000:3000"
+    environment:
+      PGRST_DB_URI: "postgres://postgres:${POSTGRES_PASSWORD:?}/${POSTGRES_DB:-geospatial_db}@db:5432"
+      PGRST_DB_SCHEMA: public
+      # Runs keyless: the anon role has full privilege so or-engine can
+      # query without a separate API key.
+      PGRST_DB_ANON_ROLE: postgres
+      PGRST_OPENAPI_SERVER_HOST: "0.0.0.0"
+      PGRST_OPENAPI_SERVER_PORT: "3000"
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+        - default
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+           - subnet: 172.28.0.0/16

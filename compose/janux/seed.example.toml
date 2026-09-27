@@ -1,0 +1,152 @@
+# Janux seed configuration.
+#
+# Copy to seed.toml and fill in credentials before use:
+#   cp seed.example.toml seed.toml
+#
+# Load order (default): janux -c base -c seed
+#
+# ── What this file does ─────────────────────────────────
+# On startup, janux creates (upserts) one tenant, its roles,
+# bootstrap users, RBAC policies, and provider config.
+# Seeding is idempotent — safe to reboot with the same file.
+#
+# ── Policy model ────────────────────────────────────────
+# `protect` is default-deny: anything not listed here is rejected.
+# Resource paths match EXACTLY (no wildcards, G-43).
+#
+# For or-engine (gated by Caddy's forward_auth → /api/v1/auth/verify):
+# the resource the proxy sees is the PROXIED path. The Caddyfile uses
+# `path` matchers for or-engine endpoints (e.g. `/optimize`, `/mcp`),
+# so janux needs matching policy rows for those paths.
+#
+# ── Security ────────────────────────────────────────────
+# A seeded user without `email` has no credential and cannot sign in.
+# Set the admin's `email` to an inbox you control so the magic-link
+# quickstart works.
+
+[[seed]]
+name = "localhost"
+
+# Domain fields:
+#   id   — hostname clients reach this tenant at (Host / X-Forwarded-Host).
+#   cors — [] forbid, ["tenant"] share, or an explicit allow list.
+#
+# For production, add your real domain here, e.g.
+#   domains = [{ id = "auth.yourdomain.com", cors = [] }]
+domains = [
+    { id = "localhost", cors = [] },
+    { id = "0.0.0.0", cors = [] },
+]
+
+# Built-in roles. Created before users and policies.
+roles = ["root", "admin", "scim", "user", "guest"]
+
+# Bootstrap accounts. `email` vouches that address as a VERIFIED login
+# credential at seed time. Without it the user cannot sign in.
+users = [
+    { name = "root",  roles = ["root"],  active = true, email = "CHANGE_ME@yourdomain.com" },
+    { name = "admin", roles = ["admin"], active = true, email = "CHANGE_ME@yourdomain.com" },
+]
+
+policies = [
+     # ── root: cross-tenant lifecycle ───────────────────
+    { domain = "localhost", resource = "/api/v1/admin/tenant/list",   role = "root", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/tenant/create", role = "root", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/tenant/delete", role = "root", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: domain management ───────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/domain/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/domain/create", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/domain/delete", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: user management ─────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/user/list",        role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/create",      role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/activate",    role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/delete",      role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/add_role",    role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/remove_role", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/attach_email",    role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/remove_email",    role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/remove_mobile",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/remove_passkey",  role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/remove_social",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/roles",         role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: role management ─────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/role/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/role/create", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/role/delete", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: social providers ────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/provider/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/provider/create", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/provider/delete", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: RBAC policies ───────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/policy/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/policy/create", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/policy/delete", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: signing keys ────────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/key/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/key/create", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/key/delete", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/key/retire", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: TOTP ────────────────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/totp/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/totp/remove", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: OIDC relying parties ────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/oauth2client/list",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/oauth2client/create", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/oauth2client/delete", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/oauth2client/meta",   role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: OIDC feature switches ───────────────────
+    { domain = "localhost", resource = "/api/v1/admin/oidc/config", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── admin: observability ───────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/metrics", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── user: self-service ─────────────────────────────
+    { domain = "localhost", resource = "/api/v1/admin/user/activate/self", role = "user", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/api/v1/admin/user/delete/self",   role = "user", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── scim: machine provisioning ─────────────────────
+    { domain = "localhost", resource = "/scim/v2/Users",      role = "scim", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/scim/v2/Users/{id}", role = "scim", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+
+     # ── OR-Engine (Caddy forward_auth → /api/v1/auth/verify) ──
+     # The Caddyfile gates or-engine's endpoints with:
+     #   forward_auth auth:8080 { uri /api/v1/auth/verify }
+     # janux evaluates the PROXIED path (X-Forwarded-Uri) as the resource.
+     # Match the path exactly (exact match, no wildcards — G-43).
+     # Add every path or-engine exposes that should be gated here.
+    { domain = "localhost", resource = "/optimize", role = "user",  source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/optimize", role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/mcp",      role = "user",  source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+    { domain = "localhost", resource = "/mcp",      role = "admin", source = "Nothing", target = "Nothing", mfa = false, allowed = true },
+]
+
+# ── Email delivery (Resend) ────────────────────────────
+# Set `resend_key` to enable magic-link and TOTP email.
+[seed.resend]
+from = "CHANGE_ME@yourdomain.com"
+resend_key = "CHANGE_ME"
+template = "./email/verify.html"
+# The verify_url should match your Caddy hostname so the link in the
+# email reaches the right front. For localhost during development:
+verify_url = "http://localhost/api/v1/auth/email/landing"
+base_url = "http://localhost"
+
+# ── SMS delivery (Aliyun) ──────────────────────────────
+# Set credentials to enable SMS OTP.
+[seed.alisms]
+api_secret = "CHANGE_ME"
+api_key = "CHANGE_ME"
+template_code = "CHANGE_ME"
+sign_name = "Change Me"
+region_id = "cn-shanghai"
+endpoint = "dysmsapi.aliyuncs.com"

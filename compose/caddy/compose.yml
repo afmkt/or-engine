@@ -1,0 +1,43 @@
+# Caddy — reverse proxy + TLS front-end.
+#
+# Routes:
+#   /optimize, /mcp*  →  forward_auth via janux (/api/v1/auth/verify)  →  app:8000
+#   /health            →  app:8000   (public health probes; monitoring)
+#   everything else    →  auth:8080  (janux: login UI, OIDC, SCIM, admin)
+#
+# Run with the full stack:
+#   cd compose && docker compose up -d
+
+name: or-engine-caddy
+
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: or_engine_caddy
+    restart: unless-stopped
+    ports:
+       - "80:80"
+       - "443:443"
+    volumes:
+       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+       - caddy_config:/config/caddy
+       - caddy_data:/data
+    depends_on:
+      auth:
+        condition: service_healthy   # wait for janux to be ready (data dir boot)
+      app:
+        condition: service_healthy   # wait for or-engine /health
+    networks:
+        - default
+
+volumes:
+  caddy_config:
+  caddy_data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+            - subnet: 172.28.0.0/16

@@ -1,0 +1,70 @@
+# Caddy Caddyfile for the or-engine stack.
+#
+# Layout (single-host, janux's session-cookie model):
+#
+#   Browser
+#     │
+#     ▼
+#   Caddy  (HTTPS via local CA, or a real cert if configured)
+#     │
+#     ├── /optimize, /mcp*    →  forward_auth (janux)  →  or-engine
+#     ├── /health             →  or-engine   (public,  monitoring)
+#     └── * (rest)            →  janux       (login UI, OIDC,
+#                                     SCIM, admin, health)
+#
+# ── Session cookie model ──────────────────────────────────
+# janux's session cookie is host-only + Secure. It is set by janux and
+# sent back by the browser only to the host that set it. Caddy sits in
+# front of both janux and or-engine, so the cookie set at /login (janux)
+# is valid for /optimize and /mcp (or-engine).
+#
+# ── forward_auth ──────────────────────────────────────────
+# Each request to a protected path triggers a side-channel probe to
+# janux at /api/v1/auth/verify. janux evaluates the PROXIED resource
+# (set via X-Forwarded-Uri) against its default-deny RBAC policy:
+#   200  → Caddy allows the request, proxies to or-engine:8000
+#   303  → Caddy propagates the Location to /login
+#   401  → unauthenticated / not found
+#   403  → authenticated but policy-denied
+#
+# ── TLS ───────────────────────────────────────────────────
+# `tls internal` signs localhost with Caddy's local CA.
+# On macOS trust that CA once:
+#   caddy trust   # or:  docker compose exec caddy caddy trust
+# For production, replace with a Let's Encrypt domain or a mutual cert.
+
+<|upstream|> {
+	tls internal
+
+	# ── OR-Engine: gated endpoints ────────────────────────
+	# /optimize is the routing solver. /mcp is the MCP streamable HTTP
+	# endpoint.  Add more paths to seed.toml's `policies` block when they
+	# are implemented, and add a matching `path /<name>` matcher here.
+	@optEngine path /optimize /mcp /mcp/*
+
+	handle @optEngine {
+		# Probe janux's verify endpoint with the ORIGINAL request path.
+		# janux reads X-Forwarded-Uri (= /optimize or /mcp) and evaluates
+		# the RBAC policy for that resource.  200 → allow; 303 → /login.
+		forward_auth auth:8080 {
+			uri /api/v1/auth/verify
+		}
+		# Proxy the ORIGINAL request to or-engine.  Caddy does NOT pass
+		# janux's session headers to or-engine — auth is a gate, not a
+		# session passthrough.
+		reverse_proxy app:8000
+	}
+
+	# ── Health probe: public, not gated ────────────────────
+	handle /health {
+		reverse_proxy app:8000
+	}
+
+	# ── Janux surface: login UI, OIDC, admin, SCIM ────────
+	# All public — unauthenticated users must be able to reach /login.
+	# /api/v1/auth/verify is also here (forward_auth calls it
+	# out-of-band; it is not a "handle" target for browsers).
+	handle {
+		reverse_proxy auth:8080
+	}
+}
