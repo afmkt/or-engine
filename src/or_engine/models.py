@@ -131,6 +131,8 @@ class Worker(BaseModel):
     available_start: int | None = None  # earliest on-the-road, s/since-midnight
     available_end: int | None = None  # must finish by, s/since-midnight
     max_orders: int = 20  # daily cap on assigned orders
+    min_orders: int = 0            # soft: preferred minimum served (not a hard 9.x constraint)
+    capacity: float | None = None    # hard per-worker capacity (units); None = unbounded
     phone: str | None = None
 
 
@@ -151,6 +153,9 @@ class Order(BaseModel):
     quantity: int = 1
     amount: float | None = None
     note: str | None = None
+    optional: bool = False             # may be left unserved (droppable at a penalty)
+    drop_penalty: float | None = None    # objective penalty incurred when this order is dropped
+    demand: float = 0.0              # capacity demand (units); 0 = none
 
     @property
     def service_seconds(self) -> int:
