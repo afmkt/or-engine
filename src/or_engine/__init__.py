@@ -1,50 +1,43 @@
-"""or_engine — public API surface."""
+"""or-engine — worker-to-order dispatch.
 
-from .map import (
-     # -- client --
-    AmapClient,
-     # -- coordinate type --
+A single-day VRPTW over installation workers and work orders:
+
+import workers & orders from Excel
+-> geocode addresses via Amap
+-> build a travel-time matrix (Amap, cached in PostGIS)
+-> route every worker through its assigned order sites (OR-Tools VRPTW)
+-> write the result back to Excel
+
+Everything is exposed through a REST (FastAPI / OpenAPI) and an MCP server.
+Layers: :mod:`models`, :mod:`spatial`, :mod:`storage`, :mod:`solver`,
+:mod:`engine`, :mod:`excel`, :mod:`api`.
+"""
+
+from .models import (
+    AssignRoute,
+    DispatchResult,
+    DispatchStatus,
+    Order,
+    OrderStop,
     Point2D,
-     # -- driving direction models --
-    CityInfo,
-    Cost,
-    DirectionResponse,
-    District,
-    Navi,
-    Path,
-    Route,
-    Step,
-    Tmc,
-     # -- geocoding models --
-    Geocode,
-    GeocodeResponse,
+    TimeWindow,
     TransportMode,
+    Worker,
 )
-from .mcp_server import build_mcp_server
-from .storage import Repository
-from .api import create_app
+from .spatial import AmapClient, TravelMatrix
 
 __all__ = [
-     # client
-     "AmapClient",
-     # coordinate type
-     "Point2D",
-     # driving direction
-     "CityInfo",
-     "Cost",
-     "DirectionResponse",
-     "District",
-     "Navi",
-     "Path",
-     "Route",
-     "Step",
-     "Tmc",
-     # geocoding
-     "Geocode",
-     "GeocodeResponse",
-     "TransportMode",
-     # mcp / api / data
-     "build_mcp_server",
-     "create_app",
-     "Repository",
+    "AssignRoute",
+    "DispatchResult",
+    "DispatchStatus",
+    "Order",
+    "OrderStop",
+    "Point2D",
+    "TimeWindow",
+    "TransportMode",
+    "Worker",
+    "AmapClient",
+    "TravelMatrix",
 ]
+
+__version__ = "0.1.0"

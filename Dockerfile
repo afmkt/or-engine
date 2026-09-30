@@ -28,5 +28,5 @@ EXPOSE 8000
 
 # `uv run or-engine` activates the .venv that `uv sync` created and runs the
 # project's declared console script (pyproject.toml: `or-engine =
-# "or_engine.server:main"`), which in turn runs `create_app()` under uvicorn.
-CMD ["uv", "run", "or-engine", "--host", "0.0.0.0", "--port", "8000"]
+# "or_engine.main:main"`), which in turn runs `create_app()` under uvicorn.
+CMD ["uv", "run", "or-engine"]
