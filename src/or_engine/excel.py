@@ -22,6 +22,7 @@ from .models import (
     TimeWindow,
     TransportMode,
     Worker,
+    WorkingHour,
 )
 
 # ── header aliases: canonical field -> accepted header spellings ────────────
@@ -54,6 +55,22 @@ _ORDER_ALIASES = {
 }
 
 
+
+# working_hours (工作工时表): product description -> on-site labour hours.
+# Source header is 商品 / 工时（小时）; 工时 cells may hold stray spaces or a
+# placeholder "-" for "unset", which _float() maps to 0.0.
+_WORKING_HOUR_ALIASES = {
+    "product": ["product", "商品", "项目", "名称", "name"],
+    "hours": [
+        "hours",
+        "工时（小时）",
+        "工时(小时)",
+        "工时",
+        "时长",
+        "做单时长",
+    ],
+}
+
 # ── generic reader ──────────────────────────────────────────────────────────
 def _rows(path: str | Path, sheet: str | None = None) -> list[dict]:
     """Read a sheet into a list of dicts keyed by *original* header text.
@@ -64,21 +81,23 @@ def _rows(path: str | Path, sheet: str | None = None) -> list[dict]:
         ws = wb[sheet]
     if ws is None:
         ws = wb.active
-    grid = list(ws.iter_rows(values_only=True))
+    rows = [r for r in ws.iter_rows(values_only=True) if r is not None]
     wb.close()
-    if not grid:
+     # skip leading fully-blank rows; the first non-blank row is the header
+    first = next((k for k, row in enumerate(rows) if any(c is not None for c in row)), None)
+    if first is None:
         return []
-    headers = [str(c).strip() if c is not None else "" for c in grid[0]]
+    headers = [str(c).strip() if c is not None else "" for c in rows[first]]
     out: list[dict] = []
-    for raw in grid[1:]:
+    for raw in rows[first + 1:]:
         if raw is None or all(c is None for c in raw):
             continue
         out.append(
-            {
+             {
                 headers[i]: (raw[i] if i < len(raw) else None)
                 for i in range(len(headers))
-            }
-        )
+             }
+         )
     return out
 
 
@@ -180,6 +199,39 @@ def import_orders(path: str | Path, sheet: str | None = None) -> list[Order]:
         out.append(o)
     return out
 
+
+
+def import_tasks(path: str | Path, sheet: str | None = None) -> list[Order]:
+    """Read tasks.xlsx into :class:`Order` rows.
+
+    ``tasks`` is the on-disk name of the work-order sheet; the dispatch engine
+    *derives* the tasks to route from these orders. This is an alias of
+    :func:`import_orders` that also accepts the ``tasks`` sheet name.
+    """
+    return import_orders(path, sheet or "tasks")
+
+
+def import_working_hours(
+    path: str | Path, sheet: str | None = None
+) -> list[WorkingHour]:
+    """Read working_hours.xlsx (商品 -> 工时) into :class:`WorkingHour` rows.
+
+    Product names are stripped; rows with no product are skipped. A
+    placeholder/empty 工时 cell decodes to ``0.0`` via :func:`_float`.
+    """
+    rows = _rows(path, sheet or "working_hours") or _rows(path)
+    out: list[WorkingHour] = []
+    for r in rows:
+        product = _opt_str(_pick(r, _WORKING_HOUR_ALIASES["product"]))
+        if not product:
+            continue
+        out.append(
+            WorkingHour(
+                product=product,
+                hours=_float(_pick(r, _WORKING_HOUR_ALIASES["hours"])),
+            )
+        )
+    return out
 
 # ── export API ──────────────────────────────────────────────────────────────
 _RESULT_HEADERS = [

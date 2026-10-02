@@ -39,9 +39,10 @@ class Geocode:
 class DirectionResponse:
     """A single direction result: distance (m) + duration (s)."""
 
-    __slots__ = ("distance_m", "duration_s", "mode")
+    __slots__ = ("ok", "distance_m", "duration_s", "mode")
 
-    def __init__(self, distance_m, duration_s, mode=""):
+    def __init__(self, ok=True, distance_m=0.0, duration_s=0.0, mode=""):
+        self.ok = ok
         self.distance_m = distance_m
         self.duration_s = duration_s
         self.mode = mode

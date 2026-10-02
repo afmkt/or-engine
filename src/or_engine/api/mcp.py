@@ -38,20 +38,60 @@ async def open_context():
 
 
 async def op_import(path: str, kind: str = "workers", source: str = "excel"):
-    """Ingest an .xlsx at *path* into the DB. ``kind`` is 'workers'/'orders'."""
-    from ..excel import import_orders, import_workers
+    """Ingest an .xlsx at *path* into the DB, recording the raw file.
+
+    ``kind`` is one of 'workers' / 'orders' / 'tasks' / 'working_hours'.
+    Returns {'upload': <file_uploads record>, 'imported': <row count>}; the
+    parsed rows are linked back to the stored bytes via source_upload_id.
+    """
+    import os
+
+    from ..excel import (
+        import_orders,
+        import_tasks,
+        import_working_hours,
+        import_workers,
+    )
 
     db, _ = await open_context()
     if db is None:
         raise RuntimeError("DB not configured (set DATABASE_URL env)")
-    # excel importers are synchronous and take a path.
-    rows = import_workers(path) if kind == "workers" else import_orders(path)
-    n = (
-        await db.upsert_workers(rows)
-        if kind == "workers"
-        else await db.upsert_orders(rows)
+
+    # 1) record the raw bytes + content hash so parsed rows trace back to source
+    with open(path, "rb") as fh:
+        payload = fh.read()
+    record = await db.save_upload(
+        kind=kind,
+        payload=payload,
+        filename=os.path.basename(path),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    return n
+    upload_id = record["id"]
+
+    # 2) excel importers are synchronous and take a path
+    if kind == "workers":
+        rows, upsert = import_workers(path), lambda: db.upsert_workers(rows, upload_id)
+    elif kind in ("orders", "tasks"):
+        rows = import_tasks(path) if kind == "tasks" else import_orders(path)
+        upsert = lambda: db.upsert_orders(rows, upload_id)
+    elif kind == "working_hours":
+        rows = import_working_hours(path)
+        upsert = lambda: db.upsert_working_hours(rows, upload_id)
+    else:
+        raise ValueError(f"unknown import kind {kind!r}")
+
+    n = await upsert()
+    return {
+        "upload": {
+            "id": record["id"],
+            "kind": kind,
+            "filename": os.path.basename(path),
+            "sha256": record["sha256"],
+            "size_bytes": record.get("size_bytes"),
+            "deduplicated": record.get("deduplicated", False),
+        },
+        "imported": n,
+    }
 
 
 async def op_dispatch(
@@ -112,7 +152,7 @@ async def op_dispatch(
 
 
 async def op_list(kind: str = "workers") -> list[dict]:
-    """List current 'workers' or 'orders' from the DB."""
+    """List current 'workers' / 'orders' / 'working_hours' from the DB."""
     db, _ = await open_context()
     if db is None:
         return []
@@ -129,6 +169,13 @@ async def op_list(kind: str = "workers") -> list[dict]:
             }
             for w in rows
         ]
+    if kind == "working_hours":
+        rows = await db.list_working_hours()
+        return [
+              {"product": h.product, "hours": h.hours, "note": h.note}
+            for h in rows
+           ]
+          # "orders" and "tasks" share the orders table
     rows = await db.list_orders()
     return [
         {
@@ -156,7 +203,18 @@ if _HAS_MCP:
     async def mcp_import_orders(path: str, source: str = "excel"):
         return await op_import(path, "orders", source)
 
-    @mcp.tool(name="list", description="List current workers or orders from the DB")
+    @mcp.tool(name="import_tasks", description="Ingest a tasks .xlsx (work orders) into the DB")
+    async def mcp_import_tasks(path: str, source: str = "excel"):
+        return await op_import(path, "tasks", source)
+
+    @mcp.tool(name="import_working_hours", description="Ingest a working_hours .xlsx (product -> labour hours)")
+    async def mcp_import_working_hours(path: str, source: str = "excel"):
+        return await op_import(path, "working_hours", source)
+
+    @mcp.tool(
+        name="list",
+        description="List current workers, orders/tasks, or working_hours from the DB",
+       )
     async def mcp_list(kind: str = "workers"):
         return await op_list(kind)
 

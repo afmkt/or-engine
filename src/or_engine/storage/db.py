@@ -77,6 +77,47 @@ UNIQUE (from_ref, to_ref, mode)
 );
 CREATE INDEX IF NOT EXISTS idx_travel_from ON travel_times (from_ref);
 CREATE INDEX IF NOT EXISTS idx_travel_to   ON travel_times (to_ref);
+
+-- file_uploads: raw bytes + content hash of every uploaded workbook, so a
+-- parsed row and a dispatch result can be tied back to the exact source.
+CREATE TABLE IF NOT EXISTS file_uploads (
+id            UUID PRIMARY KEY,
+kind          TEXT NOT NULL,           -- 'workers' | 'orders' | 'working_hours'
+filename      TEXT,
+content_type  TEXT,
+sha256        TEXT NOT NULL,           -- content hash (dedup key / audit record)
+size_bytes    BIGINT NOT NULL,
+payload       BYTEA NOT NULL,          -- raw .xlsx bytes (Postgres TOAST, ~1 GB cap)
+uploaded_by   TEXT,
+uploaded_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_file_uploads_kind ON file_uploads (kind);
+CREATE INDEX IF NOT EXISTS idx_file_uploads_sha256 ON file_uploads (sha256);
+
+-- working_hours (工作工时表): product description -> on-site labour hours.
+-- Foreign key back to the upload that supplied these rows.
+CREATE TABLE IF NOT EXISTS working_hours (
+product          TEXT PRIMARY KEY,
+hours            DOUBLE PRECISION NOT NULL DEFAULT 0,
+note             TEXT,
+source_upload_id UUID REFERENCES file_uploads(id) ON DELETE SET NULL,
+updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- traceability: tie every parsed worker/order row to its source upload.
+ALTER TABLE workers ADD COLUMN IF NOT EXISTS source_upload_id UUID;
+ALTER TABLE orders  ADD COLUMN IF NOT EXISTS source_upload_id UUID;
+DO $or_engine$
+BEGIN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'workers_source_upload_fk') THEN
+          ALTER TABLE workers ADD CONSTRAINT workers_source_upload_fk
+               FOREIGN KEY (source_upload_id) REFERENCES file_uploads(id) ON DELETE SET NULL;
+     END IF;
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'orders_source_upload_fk') THEN
+          ALTER TABLE orders ADD CONSTRAINT orders_source_upload_fk
+               FOREIGN KEY (source_upload_id) REFERENCES file_uploads(id) ON DELETE SET NULL;
+     END IF;
+END $or_engine$;
 """
 
 
@@ -147,7 +188,10 @@ class DB:
             )
 
     # ── workers ─────────────────────────────────────────────────────────
-    async def upsert_workers(self, workers: list[Worker]) -> int:
+    async def upsert_workers(
+        self, workers: list[Worker],
+        source_upload_id: str | None = None,
+    ) -> int:
         async with self.pool.acquire() as conn:
             for w in workers:
                 p = w.home_point
@@ -155,8 +199,8 @@ class DB:
                     "INSERT INTO workers "
                     "(id, name, home_address, home_lng, home_lat, home_point, "
                     " transport, available_start, available_end, max_orders, "
-                    " phone) "
-                    "VALUES ($1,$2,$3,$4,$5, ST_GeogFromText($6), $7,$8,$9,$10,$11) "
+                    " phone, source_upload_id) "
+                    "VALUES ($1,$2,$3,$4,$5, ST_GeogFromText($6), $7,$8,$9,$10,$11,$12) "
                     "ON CONFLICT (id) DO UPDATE SET "
                     "  name=EXCLUDED.name, home_address=EXCLUDED.home_address, "
                     "  home_lng=EXCLUDED.home_lng, home_lat=EXCLUDED.home_lat, "
@@ -164,7 +208,7 @@ class DB:
                     "  transport=EXCLUDED.transport, "
                     "  available_start=EXCLUDED.available_start, "
                     "  available_end=EXCLUDED.available_end, "
-                    "  max_orders=EXCLUDED.max_orders, phone=EXCLUDED.phone, "
+                    "  max_orders=EXCLUDED.max_orders, phone=EXCLUDED.phone, source_upload_id=COALESCE(EXCLUDED.source_upload_id, workers.source_upload_id), "
                     "  updated_at=now()",
                     w.id,
                     w.name,
@@ -177,6 +221,7 @@ class DB:
                     w.available_end,
                     w.max_orders,
                     w.phone,
+                    source_upload_id,
                 )
         return len(workers)
 
@@ -202,7 +247,10 @@ class DB:
         return out
 
     # ── orders ──────────────────────────────────────────────────────────
-    async def upsert_orders(self, orders: list[Order]) -> int:
+    async def upsert_orders(
+        self, orders: list[Order],
+        source_upload_id: str | None = None,
+    ) -> int:
         async with self.pool.acquire() as conn:
             for o in orders:
                 p = o.site_point
@@ -211,9 +259,9 @@ class DB:
                     "INSERT INTO orders "
                     "(id, order_no, order_type, merchant, site_address, "
                     " site_lng, site_lat, site_point, date, window_start, "
-                    " window_end, service_hours, quantity, amount, note) "
+                    " window_end, service_hours, quantity, amount, note, source_upload_id) "
                     "VALUES ($1,$2,$3,$4,$5,$6,$7, ST_GeogFromText($8), $9,$10,$11,"
-                    " $12,$13,$14,$15) "
+                    " $12,$13,$14,$15,$16) "
                     "ON CONFLICT (id) DO UPDATE SET "
                     "  order_no=EXCLUDED.order_no, order_type=EXCLUDED.order_type, "
                     "  merchant=EXCLUDED.merchant, site_address=EXCLUDED.site_address, "
@@ -222,7 +270,7 @@ class DB:
                     "  date=EXCLUDED.date, window_start=EXCLUDED.window_start, "
                     "  window_end=EXCLUDED.window_end, service_hours=EXCLUDED.service_hours, "
                     "  quantity=EXCLUDED.quantity, amount=EXCLUDED.amount, "
-                    "  note=EXCLUDED.note, updated_at=now()",
+                    "  note=EXCLUDED.note, source_upload_id=COALESCE(EXCLUDED.source_upload_id, orders.source_upload_id), updated_at=now()",
                     o.id,
                     o.order_no,
                     o.order_type,
@@ -238,6 +286,7 @@ class DB:
                     o.quantity,
                     o.amount,
                     o.note,
+                    source_upload_id,
                 )
         return len(orders)
 
@@ -265,6 +314,133 @@ class DB:
                     service_hours=r["service_hours"] or 0.0,
                     quantity=r["quantity"] or 1,
                     amount=r["amount"],
+                    note=r["note"],
+                )
+            )
+        return out
+
+    # ── file_uploads: raw workbook bytes + content hash ───────────────────
+    # The raw .xlsx bytes are stored as BYTEA (Postgres TOAST, ~1 GB cap).
+    # Keep them in-DB while files stay small; at scale offload the bytes to
+    # object storage and retain only the pointer + sha256 here.
+    async def save_upload(
+        self,
+        *,
+        kind: str,
+        payload: bytes,
+        filename: str | None = None,
+        content_type: str | None = None,
+        uploaded_by: str | None = None,
+    ) -> dict:
+        """Persist raw bytes in ``file_uploads`` and return its record.
+
+        ``sha256`` is the content hash of *payload* -- the dedup key and the
+        traceability link back to the exact source bytes. Returns
+        ``deduplicated: True`` when an identical prior upload is reused.
+        """
+        import hashlib
+        import uuid
+
+        sha = hashlib.sha256(payload).hexdigest()
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT id, kind, filename, content_type, sha256, size_bytes, "
+                "uploaded_by, uploaded_at FROM file_uploads "
+                "WHERE kind=$1 AND sha256=$2 ORDER BY uploaded_at LIMIT 1",
+                kind,
+                sha,
+            )
+            if row is not None:
+                return {k: row[k] for k in row.keys()} | {"deduplicated": True}
+            uid = str(uuid.uuid4())
+            await conn.execute(
+                "INSERT INTO file_uploads "
+                "(id, kind, filename, content_type, sha256, size_bytes, payload, "
+                " uploaded_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+                uid,
+                kind,
+                filename,
+                content_type,
+                sha,
+                len(payload),
+                payload,
+                uploaded_by,
+            )
+        return {
+            "id": uid,
+            "kind": kind,
+            "filename": filename,
+            "content_type": content_type,
+            "sha256": sha,
+            "size_bytes": len(payload),
+            "deduplicated": False,
+        }
+
+    async def get_upload_by_sha256(self, sha256: str) -> dict | None:
+        """Return a ``file_uploads`` record by content hash, or ``None``."""
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT id, kind, filename, content_type, sha256, size_bytes, "
+                "uploaded_by, uploaded_at FROM file_uploads WHERE sha256=$1 "
+                "ORDER BY uploaded_at LIMIT 1",
+                sha256,
+            )
+        if row is None:
+            return None
+        return {k: row[k] for k in row.keys()}
+
+    async def list_uploads(self, kind: str | None = None) -> list[dict]:
+        """Recent uploads (metadata only; the ``payload`` bytes are excluded)."""
+        cols = (
+            "id, kind, filename, content_type, sha256, size_bytes, "
+            "uploaded_by, uploaded_at"
+        )
+        async with self.pool.acquire() as conn:
+            if kind:
+                rows = await conn.fetch(
+                    f"SELECT {cols} FROM file_uploads WHERE kind=$1 "
+                    "ORDER BY uploaded_at DESC LIMIT 200",
+                    kind,
+                )
+            else:
+                rows = await conn.fetch(
+                    f"SELECT {cols} FROM file_uploads "
+                    "ORDER BY uploaded_at DESC LIMIT 200"
+                )
+        return [dict(r) for r in rows]
+
+    # ── working_hours ───────────────────────────────────────────────────
+    async def upsert_working_hours(
+        self,
+        hours: list[WorkingHour],
+        source_upload_id: str | None = None,
+    ) -> int:
+        async with self.pool.acquire() as conn:
+            for h in hours:
+                await conn.execute(
+                    "INSERT INTO working_hours "
+                    "(product, hours, note, source_upload_id) VALUES ($1,$2,$3,$4) "
+                    "ON CONFLICT (product) DO UPDATE SET "
+                    "  hours=EXCLUDED.hours, "
+                    "  note=COALESCE(EXCLUDED.note, working_hours.note), "
+                    "  source_upload_id=COALESCE(EXCLUDED.source_upload_id, "
+                    "    working_hours.source_upload_id), updated_at=now()",
+                    h.product,
+                    h.hours,
+                    h.note,
+                    source_upload_id,
+                )
+        return len(hours)
+
+    async def list_working_hours(self) -> list[WorkingHour]:
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch("SELECT * FROM working_hours ORDER BY product")
+        out: list[WorkingHour] = []
+        for r in rows:
+            out.append(
+                WorkingHour(
+                    product=r["product"],
+                    hours=r["hours"] or 0.0,
                     note=r["note"],
                 )
             )

@@ -55,8 +55,8 @@ async def build_travel_matrix(
                         f"Amap direction failed {refs[i]}→{refs[j]}: "
                         f"info={resp.info!r} infocode={resp.infocode!r}"
                     )
-                distance[i][j] = float(resp.distance or 0.0)
-                duration[i][j] = float(resp.duration or 0.0)
+                distance[i][j] = float(resp.distance_m or 0.0)
+                duration[i][j] = float(resp.duration_s or 0.0)
         return TravelMatrix(
             node_refs=refs, distance=distance, duration=duration, source=mode
         )
@@ -94,8 +94,8 @@ async def build_travel_matrix(
                 f"Amap direction failed {refs[i]}→{refs[j]}: "
                 f"info={resp.info!r} infocode={resp.infocode!r}"
             )
-        dm = float(resp.distance or 0.0)
-        ds = float(resp.duration or 0.0)
+        dm = float(resp.distance_m or 0.0)
+        ds = float(resp.duration_s or 0.0)
         distance[i][j] = dm
         duration[i][j] = ds
         if symmetric:
@@ -108,9 +108,9 @@ async def build_travel_matrix(
             distance_m=distance[i][j],
             duration_s=duration[i][j],
         )
-        return TravelMatrix(
-            node_refs=refs, distance=distance, duration=duration, source=mode
-        )
+    return TravelMatrix(
+        node_refs=refs, distance=distance, duration=duration, source=mode
+    )
 
 
 class TravelMatrix:

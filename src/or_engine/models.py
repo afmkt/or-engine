@@ -162,6 +162,19 @@ class Order(BaseModel):
         return int(self.service_hours * 3600)
 
 
+class WorkingHour(BaseModel):
+    """Product -> on-site labour-hours lookup row (工作工时表).
+
+    One row per product description from working_hours.xlsx
+      (商品 -> 工时（小时）). Used to price a task's on-site service time
+    without carrying the raw hours on the task itself.
+"""
+
+    model_config = ConfigDict(extra="ignore")
+
+    product: str      # 商品 — natural key, e.g. "两移门"
+    hours: float = 0.0      # 工时（小时）
+    note: str | None = None
 # ── output ──────────────────────────────────────────────────────────────────
 class OrderStop(BaseModel):
     """One visit in a worker's route."""

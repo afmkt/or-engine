@@ -256,7 +256,9 @@ def _solve_ortools(
             time_var.SetCumulVarRange(manager.NodeToIndex(v), lo, hi)
 
     # ── capacity / order-count dimension (when one is configured) ───────────
-    _maybe_add_capacity(routing, manager, workers, orders, order_node, n_v)
+    has_capacity_dim = _maybe_add_capacity(
+        routing, manager, workers, orders, order_node, n_v
+    )
 
     # ── optional / droppable orders ─────────────────────────────────────────
     for o in orders:
@@ -296,7 +298,7 @@ def _solve_ortools(
         order_node, order_by_id, refs, factor_by_vehicle, elapsed,
         matrix_for, n_v, service,
      )
-    result.metadata["has_time_windows"] = 1 if has_time_windows else 0
+    result.metadata["has_time_windows"] = 1 if any(o.time_window for o in orders) else 0
     result.metadata["has_capacity_dim"] = 1 if has_capacity_dim else 0
     if result.metadata.get("infeasible_reasons"):
            # This OR-Tools binding does not reliably enforce dimensions /
@@ -529,7 +531,8 @@ def _solve_generic(
     matrix_for = lambda w: pwm[w.id] if w.id in pwm else matrix
 
     routes = [AssignRoute(worker_id=w.id, worker_name=w.name) for w in workers]
-    clock = [int(w.available_start or 0) for w in workers]    # current time per worker
+    clock = [int(w.available_start or 0) for w in workers]
+    t0 = time.monotonic()    # current time per worker
     cur = [0] * n_v                                            # current node per worker
     used = [0.0] * n_v                                         # capacity used per worker
     caps = [float(w.capacity) if w.capacity is not None else _BIG for w in workers]
@@ -597,11 +600,13 @@ def _solve_generic(
     status = DispatchStatus.OPTIMAL if not unassigned else DispatchStatus.FEASIBLE
     total_travel = sum(r.total_travel_s for r in routes)
     dropped = [o.id for o in orders if o.optional and o.id in unassigned]
+    elapsed = time.monotonic() - t0
     return DispatchResult(
         routes=sorted(routes, key=lambda r: r.worker_name),
         unassigned_orders=unassigned,
         status=status,
         objective_value=total_travel,
+        solve_time_s=elapsed,
         metadata={
              "n_workers": n_v,
              "n_orders": len(orders),
