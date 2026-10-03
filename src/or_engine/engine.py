@@ -34,19 +34,23 @@ async def geocode_missing(
     workers: list[Worker],
     orders: list[Order],
     amap: AmapClient | None,
+    city: str = "",
 ) -> None:
-    """Fill any missing home_point / site_point coordinates via Amap."""
+    """Fill missing home_point / site_point coordinates via Amap.
+
+    ``city`` biases AMap geocoding for free-text addresses (e.g. "上海").
+    """
     if amap is None:
         return
     for w in workers:
         if w.home_point is None and w.home_address:
-            hits = await amap.geocode(w.home_address)
+            hits = await amap.geocode(w.home_address, city=city)
             if hits:
                 w.home_point = hits[0].location
                 log.info("geocoded worker %s (%s)", w.name, w.home_point.to_str())
     for o in orders:
         if o.site_point is None and o.site_address:
-            hits = await amap.geocode(o.site_address)
+            hits = await amap.geocode(o.site_address, city=city)
             if hits:
                 o.site_point = hits[0].location
                 log.info("geocoded order %s (%s)", o.order_no, o.site_point.to_str())

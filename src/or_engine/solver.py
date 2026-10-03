@@ -213,6 +213,8 @@ def _solve_ortools(
 
     # ── per-vehicle transit (objective = travel time) ──────────────────────
     def travel(i_from, i_to, vehicle):
+        if i_to == vehicle:        # OPEN ROUTE #6: return-to-depot leg = 0 cost
+            return 0
         fn = manager.IndexToNode(i_from)
         tn = manager.IndexToNode(i_to)
         base = matrix_for(workers[vehicle]).duration[fn][tn]
@@ -229,6 +231,8 @@ def _solve_ortools(
         def time_cb(i_from, i_to, vehicle=v):
             fn = manager.IndexToNode(i_from)
             tn = manager.IndexToNode(i_to)
+            if tn == vehicle:      # OPEN ROUTE #6: no return travel, keep last service
+                return service[fn]
             base = matrix_for(workers[vehicle]).duration[fn][tn]
             return int(round(base * factor_by_vehicle[vehicle])) + service[fn]
         time_indices.append(routing.RegisterTransitCallback(time_cb))
@@ -408,15 +412,14 @@ def _simulate_route(
         t = dep
         prev = node
 
-    # closed-loop return to the home depot
-    travel += int(round(mv.duration[prev][v] * factor))
-    dist += mv.distance[prev][v]
-
+          # OPEN ROUTE (decision #6): the return-to-home leg is *excluded* from the
+      # reported travel/distance; the day-end cutoff applies to ``t`` = the last
+      # task's finish (NOT last-finish + drive home).
     if w.available_end is not None and t > int(w.available_end):
         return (
             stops, travel, dist, svc, False,
-            f"worker {w.name} finishes {t}s > available_end {w.available_end}s",
-        )
+            f"worker {w.name} finishes {t}s > day-end {int(w.available_end)}s",
+             )
     cap = None
     if (w.max_orders or 0) and len(stops) > (w.max_orders or 0):
         cap = f"worker {w.name} serves {len(stops)} > max_orders {w.max_orders}"

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
     # ── Amap (高德) ────────────────────────────────────────────────────
     amap_api_key: str = ""
+    amap_city: str = "上海"    # city hint for geocoding (CLI --city overrides)
 
     # ── persistence ────────────────────────────────────────────────────
     database_url: str = "postgresql://postgres:postgres@localhost:5432/geospatial_db"

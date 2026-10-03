@@ -147,9 +147,11 @@ class Order(BaseModel):
     merchant: str | None = None
     site_address: str | None = None
     site_point: Point2D | None = None  # geocoded from site_address
+    product: str | None = None           # 商品 — raw multi-line item list
+    contact: str | None = None           # 联系人 — usually "name/phone"
     date: str | None = None  # YYYY-MM-DD, or None = undated
-    time_window: TimeWindow | None = None  # when work should start/finish
-    service_hours: float = 0.0  # 做单时长 (hours on-site)
+    time_window: TimeWindow | None = None   # when work should start/finish
+    service_hours: float = 0.0   # 做单时长 (hours on-site); resolved from 商品 via working_hours
     quantity: int = 1
     amount: float | None = None
     note: str | None = None

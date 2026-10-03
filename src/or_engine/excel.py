@@ -260,8 +260,15 @@ def export_result(
     result: DispatchResult,
     workers: list[Worker] | None = None,
     orders: list[Order] | None = None,
+    removed: object | None = None,
+    qty_warnings: object | None = None,
 ) -> Path:
-    """Write *result* to a .xlsx with sheets 结果 / 汇总 / (未分配)."""
+    """Write *result* to a .xlsx with sheets 结果 / 汇总 / (未分配) / (移除) / (数量警告).
+
+    移除 lists tasks dropped during parsing (reason + offending lines); 数量警告
+    lists 商品 lines whose parsed quantity hit the warn threshold. Each extra sheet
+    is written only when its argument is a non-empty list.
+    """
     order_by_id = {o.id: o for o in (orders or [])}
     wb = Workbook()
 
@@ -306,11 +313,27 @@ def export_result(
             no = order_by_id.get(oid)
             ws3.append([no.order_no if no else oid])
 
+    if removed:
+        ws4 = wb.create_sheet("移除")
+        ws4.append(["序号", "商家", "原因", "未匹配商品行"])
+        for t in removed:
+            ws4.append([t.order_no, t.merchant or "", t.reason, " | ".join(t.lines)])
+
+    if qty_warnings:
+        ws5 = wb.create_sheet("数量警告")
+        ws5.append(["序号", "商品行", "解析数量", "匹配商品", "单位工时(h)"])
+        for q in qty_warnings:
+            ws5.append([
+                q.get("order_no", ""),
+                q.get("line", ""),
+                q.get("parsed_qty"),
+                q.get("matched") or "无匹配",
+                q.get("hours_each"),
+            ])
+
     out = Path(path)
     wb.save(out)
     return out
-
-
 def _to_hhmm(seconds: float | None) -> str:
     if seconds is None:
         return ""
