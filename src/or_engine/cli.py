@@ -25,6 +25,7 @@ import argparse
 import asyncio
 import json
 import os
+from dotenv import load_dotenv
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -463,6 +464,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    load_dotenv()
     p = build_parser()
     args = p.parse_args(argv)
     if not args.cmd:
