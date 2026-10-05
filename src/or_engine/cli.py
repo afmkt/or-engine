@@ -1,8 +1,10 @@
-"""Standalone single-day dispatch pipeline (pure data transformation, no DB/cache).
+"""Standalone single-day dispatch pipeline.
 
-A demonstration / CLI entry point that runs the *whole* one-day VRPTW-with-drop
-pipeline with **no database and no cache** -- only file transform, an AMap
-geocode + driving-matrix call, and the OR-Tools optimiser:
+A CLI entry point that runs the *whole* one-day VRPTW-with-drop
+pipeline via file transform, an AMap geocode + driving-matrix call
+(with optional SQLite caching via ``--cache <path>`` -- reuses
+geocode/travel results across runs without a database server),
+and the OR-Tools optimiser:
 
       1 parse-hours   working_hours.xlsx           -> product -> hours lookup
       2 parse-workers workers.xlsx                 -> Worker[]
@@ -34,6 +36,7 @@ from .excel import export_result, import_workers
 from .models import DispatchResult, Order, Point2D, Worker
 from .spatial.amap import AmapClient
 from .spatial.travel import TravelMatrix, build_travel_matrix
+from .storage.cache import LocalCache
 from .solver import solve_dispatch
 from .tasks import RemovedTask, import_tasks, load_working_hours
 
@@ -75,6 +78,10 @@ class State:
     result: object | None = None
     coords_source: str = "amap"
     matrix_source: str = ""
+    # nodes whose coordinates came from the local synthetic fallback rather
+    # than a real AMap geocode, so AMap-vs-fallback is preserved across the
+    # pipeline. Each entry: {kind, key, address, coords("lng,lat")}.
+    fallbacks: list = field(default_factory=list)
 
 
 # -- checkpoint I/O to --workdir --------------------------------------------
@@ -97,7 +104,32 @@ def _save(path: Path, step: str, st: State) -> None:
     elif step == "geo":
         w("workers_geo", [v.model_dump(mode="json") for v in st.workers])
         w("tasks_geo", [o.model_dump(mode="json") for o in st.orders])
-        w("meta", {"coords_source": st.coords_source})
+        w("meta", {"coords_source": st.coords_source,
+                        "fallbacks": st.fallbacks})
+        # machine-readable data-source split: which nodes were NOT geocoded
+         # via AMap but got local/synthetic fallback coordinates. Downstream
+         # tooling can read --workdir/fallbacks.json to filter unreliable legs.
+        fbs = st.fallbacks
+        fb_nw = sum(1 for f in fbs if f["kind"] == "worker")
+        fb_no = sum(1 for f in fbs if f["kind"] == "order")
+        w("fallbacks", {
+                "coords_source": st.coords_source,
+               "count": len(fbs),
+               "workers": fb_nw,
+               "orders": fb_no,
+               "all_from_amap": len(fbs) == 0,
+               "fallbacks": [
+                    {"kind": f["kind"], "key": f["key"],
+                         "address": f["address"], "coords": f["coords"],
+                         "lng": float(f["coords"].split(",")[0]),
+                         "lat": float(f["coords"].split(",")[1]),
+                         "reason": "amap geocode miss/error -> synthetic"}
+                    for f in fbs],
+             })
+        print(f"             [cache] wrote {path / 'fallbacks.json'}     "
+                f"({len(fbs)} local-fallback node(s); "
+                f"{len(fbs) == 0 and 'all coords from AMap' or 'see file'})",
+                flush=True)
     elif step == "matrix" and st.matrix is not None:
         m = st.matrix
         w("matrix", {"node_refs": m.node_refs, "distance": m.distance,
@@ -128,6 +160,14 @@ def _load(path: Path) -> State:
         st.qty_warnings = rd("qty_warnings") or []
     m = dict(rd("meta") or {})
     st.coords_source = m.get("coords_source", "amap")
+    # prefer the dedicated machine-readable fallbacks.json; fall back to
+     # the legacy meta payload for older checkpoints.
+    fb_doc = rd("fallbacks")
+    if fb_doc is not None:
+        st.fallbacks = fb_doc.get("fallbacks") or []
+        st.coords_source = fb_doc.get("coords_source", st.coords_source)
+    else:
+        st.fallbacks = m.get("fallbacks") or []
     # workers: prefer geocoded
     workers = rd("workers_geo") or rd("workers_raw")
     if workers is not None:
@@ -147,33 +187,119 @@ def _load(path: Path) -> State:
 
 # -- step 4: geocode --------------------------------------------------------
 def _synth_coords(addr: str) -> Point2D:
-    """Deterministic pseudo-geocode into the 上海 bounding box (offline fallback)."""
-    h = hash(addr or "?") % 100000
+    """Deterministic pseudo-geocode into the 上海 bounding box (offline fallback).
+
+    Must be stable across processes: the built-in ``hash()`` of a str is
+    salted per interpreter (PYTHONHASHSEED), so a coordinate derived from it
+    changes every run and breaks the travel-time cache keys (``to_str()``)
+    -- those pairs then MISS the cache on every re-run. Use a stable digest.
+    """
+    import hashlib
+    h = int(hashlib.md5((addr or "?").encode("utf-8")).hexdigest(), 16) % 100000
     lat = _SH_LAT[0] + (h % 10000) / 10000.0 * (_SH_LAT[1] - _SH_LAT[0])
     lng = _SH_LNG[0] + (h // 10000) / 1000.0 * (_SH_LNG[1] - _SH_LNG[0])
     return Point2D(lat=round(lat, 6), lng=round(lng, 6))
 
 
-async def _geocode_amap(st: State, city: str) -> tuple[int, int]:
+async def _one_geocode(client: AmapClient, addr: str, city: str,
+                       cache: "LocalCache | None" = None,
+                       stats: "dict | None" = None):
+    """"Call AMap geocode for one address, logging each outcome live.
+
+            Returns the first Geocode hit, or None on miss / HTTP / parse error.
+            When *stats* is a dict, per-address cache outcomes are tallied in
+            place (hit / miss / saved / failed) for the end-of-phase summary.
+            """
+
+    def _bump(key: str) -> None:
+        if stats is not None:
+            stats[key] = stats.get(key, 0) + 1
+
+    if cache is not None:
+        hit = await cache.get_geocode(addr, city)
+        if hit is not None:
+            _bump("hit")
+            print(f"             [cache]   HIT       {addr!r}   city={city!r}"
+                                f"      -> ({hit.location.lat}, {hit.location.lng})", flush=True)
+            return hit
+        _bump("miss")
+        print(f"             [cache]   MISS      {addr!r}   city={city!r}"
+                      f"      (will call AMap)", flush=True)
+
+    print(f"             [amap]      ->  geocode  {addr!r}   city={city!r}",
+                  flush=True)
+    try:
+        hits = await client.geocode(addr, city=city)
+    except Exception as e:                               # surface, do not abort
+        _bump("failed")
+        print(f"               <-  ERROR    {type(e).__name__}: {e}", flush=True)
+        return None
+    if hits:
+        g = hits[0]
+        extra = f"     [ +{len(hits) - 1} more ]" if len(hits) > 1 else ""
+        print(f"               <-  OK     {g.name or '?':<18}"
+                      f" ({g.location.lat}, {g.location.lng}){extra}", flush=True)
+        if cache is not None:
+            await cache.save_geocode(addr, city, g.name or "",
+                                                 g.location.lat, g.location.lng)
+            _bump("saved")
+            print(f"             [cache] INSERT     {addr!r}   city={city!r}"
+                                  f"      <- ({g.location.lat}, {g.location.lng})", flush=True)
+        return g
+    _bump("failed")
+    print("               <-  MISS  no geocode returned", flush=True)
+    return None
+
+
+async def _geocode_amap(st: State, city: str,
+                        fallback: bool = False,
+                        cache: 'LocalCache | None' = None,
+                        stats: 'dict | None' = None) -> tuple[int, int, int]:
+    """Geocode every missing point via AMap, logging each call to the console.
+
+    fallback=True -> synthetic coords for any miss/error (keeps the run going).
+    Returns (resolved, failed, synthesised); resolved counts points whose
+    coordinate is set after the pass.
+    """
     client = AmapClient(api_key=os.environ.get("AMAP_API_KEY", ""))
-    resolved = failed = 0
+    failed = synthesised = 0
     for w in st.workers:
-        if w.home_point is None and w.home_address:
-            hits = await client.geocode(w.home_address, city=city)
-            if hits:
-                w.home_point = hits[0].location
-                resolved += 1
+        if w.home_point is not None:
+            continue
+        if w.home_address:
+            hit = await _one_geocode(client, w.home_address, city,
+                                     cache=cache, stats=stats)
+            if hit is not None:
+                w.home_point = hit.location
+        if w.home_point is None:
+            if fallback:
+                w.home_point = _synth_coords(w.home_address or w.name or "d")
+                st.fallbacks.append({"kind": "worker", "key": w.id,
+                         "address": w.home_address or w.name or "d",
+                         "coords": w.home_point.to_str()})
+                synthesised += 1
             else:
                 failed += 1
     for o in st.orders:
-        if o.site_point is None and o.site_address:
-            hits = await client.geocode(o.site_address, city=city)
-            if hits:
-                o.site_point = hits[0].location
-                resolved += 1
+        if o.site_point is not None:
+            continue
+        if o.site_address:
+            hit = await _one_geocode(client, o.site_address, city,
+                                     cache=cache, stats=stats)
+            if hit is not None:
+                o.site_point = hit.location
+        if o.site_point is None:
+            if fallback:
+                o.site_point = _synth_coords(o.site_address or o.order_no or "s")
+                st.fallbacks.append({"kind": "order", "key": o.order_no,
+                          "address": o.site_address or o.order_no or "s",
+                          "coords": o.site_point.to_str()})
+                synthesised += 1
             else:
                 failed += 1
-    return resolved, failed
+    resolved = (sum(1 for w in st.workers if w.home_point)
+                    + sum(1 for o in st.orders if o.site_point))
+    return resolved, failed, synthesised
 
 
 async def _geocode_auto(st: State) -> int:
@@ -181,55 +307,137 @@ async def _geocode_auto(st: State) -> int:
     for w in st.workers:
         if w.home_point is None:
             w.home_point = _synth_coords(w.home_address or w.name or "d")
+            st.fallbacks.append({"kind": "worker", "key": w.id,
+                     "address": w.home_address or w.name or "d",
+                     "coords": w.home_point.to_str()})
             n += 1
     for o in st.orders:
         if o.site_point is None:
             o.site_point = _synth_coords(o.site_address or o.order_no or "s")
+            st.fallbacks.append({"kind": "order", "key": o.order_no,
+                      "address": o.site_address or o.order_no or "s",
+                      "coords": o.site_point.to_str()})
             n += 1
     return n
 
 
-async def step_geocode(st: State, city: str, mode: str, out: Path) -> None:
+def print_geocode_cache_summary(cache, stats: dict,
+                               fallbacks: "list | None" = None) -> None:
+    """"End-of-phase cache status summary for the geocode step.
+
+            Tallies per-address outcomes in *stats* (hit / miss / saved /
+            failed) so the user can track how populated the geocode cache is
+            across runs. Mirrors the direction-matrix scan summary.
+            """
+    hits   = stats.get("hit", 0)
+    miss   = stats.get("miss", 0)
+    saved  = stats.get("saved", 0)
+    failed = stats.get("failed", 0)
+    scanned = hits + miss
+    pct = (100 * hits / scanned) if scanned else 0.0
+    loc = getattr(cache, "_path", None)
+    locstr = f"sqlite:{loc}" if loc else "db"
+    lines = [
+        f"              [cache] geocode  summary           [{locstr}]",
+        f"                addresses scanned          : {scanned}",
+        f"                HIT     (from cache)        : {hits:<8d} ({pct:5.1f}%)",
+        f"                MISS    (-> AMap API)       : {miss:<8d} "
+                            f"({100 - pct:5.1f}%)",
+        f"                 saved to cache             : {saved}",
+        f"                 failed / empty             : {failed}",
+     ]
+    _seen: set = set()
+    _fb = [f for f in (fallbacks or []) if f.get("key") not in _seen
+             and not _seen.add(f.get("key"))]
+    _n_worker = sum(1 for f in _fb if f.get("kind") == "worker")
+    _n_order   = sum(1 for f in _fb if f.get("kind") == "order")
+    lines += [
+        f"        FALLBACK(local, NOT AMap)  : {len(_fb):<8d} "
+            f"(workers={_n_worker}, orders={_n_order})",
+     ]
+    for f in _fb:
+        lines.append(
+            f"        - [{f.get('kind')}] {f.get('key')}   "
+                f"addr={f.get('address')!r}  -> ({f.get('coords')})")
+    print("\n".join(lines), flush=True)
+
+
+async def step_geocode(st: State, city: str, mode: str, out: Path,
+                       cache: "LocalCache | None" = None) -> None:
     have_key = bool(os.environ.get("AMAP_API_KEY"))
     n = total_failed = 0
+    cache_stats: dict = {}
     if not have_key:
         n = await _geocode_auto(st)
         st.coords_source = "synthetic"
-        print(f"[4/7] geocode        source=synthetic  city={city}    "
-              f"(no AMAP_API_KEY -> deterministic pseudo-geo within 上海 bbox)")
+        print(f"[4/7] geocode        source=synthetic  city={city}                  "
+                      f"(no AMAP_API_KEY -> deterministic pseudo-geo within 上海 bbox)")
     elif mode == "amap":
-        resolved, failed = await _geocode_amap(st, city)
-        st.coords_source, n, total_failed = "amap", resolved, failed
-        print(f"[4/7] geocode        source=amap  city={city}")
+        n, total_failed, synthesised = await _geocode_amap(
+                    st, city, fallback=False, cache=cache, stats=cache_stats)
+        st.coords_source = "amap"
+    else:                                                     # auto: AMap first, synth misses
+        n, total_failed, synthesised = await _geocode_amap(
+                    st, city, fallback=True, cache=cache, stats=cache_stats)
+        st.coords_source = "amap+synth"
+        if synthesised:
+            print(f"                (synthesised coords for {synthesised} "
+                               "missed/errored address, fallback)")
+    if cache is not None:
+        print_geocode_cache_summary(cache, cache_stats, fallbacks=st.fallbacks)
     else:
-        resolved, failed = await _geocode_auto(st)
-        st.coords_source, n, total_failed = "amap+synth", resolved, failed
-        print(f"[4/7] geocode        source=amap+synth  city={city}")
-    print(f"               {n} points resolved, {total_failed} failed    "
-          f"(workers={len(st.workers)}, tasks={len(st.orders)})")
+        # no cache backing: still surface the AMap-vs-fallback split so the
+        # user sees which coordinates are local/synthetic, not from AMap.
+        if st.fallbacks:
+            n_w = sum(1 for f in st.fallbacks if f["kind"] == "worker")
+            n_o = sum(1 for f in st.fallbacks if f["kind"] == "order")
+            print(f"                 FALLBACK (local, NOT AMap): "
+                              f"{len(st.fallbacks)} (workers={n_w}, orders={n_o})")
+            for f in st.fallbacks:
+                print(f"                   - [{f['kind']}] {f['key']} "
+                        f"addr={f['address']!r} -> ({f['coords']})")
+    print(f"               {n} points resolved, {total_failed} failed               "
+                  f"(workers={len(st.workers)}, tasks={len(st.orders)})")
     _save(out, "geo", st)
 
 # -- step 5: matrix ---------------------------------------------------------
-async def step_matrix(st: State, mode: str, out: Path) -> None:
+async def step_matrix(st: State, mode: str, out: Path,
+                      concurrency: int = 3, max_retries: int = 5,
+                      cache: "LocalCache | None" = None) -> None:
     pts = [o.site_point for o in st.orders] + [w.home_point for w in st.workers]
     refs = [f"o:{o.order_no}" for o in st.orders] + [f"w:{w.id}" for w in st.workers]
     have_key = bool(os.environ.get("AMAP_API_KEY"))
     if mode == "amap" and not have_key:
         raise SystemExit("ERROR: matrix(amap) needs AMAP_API_KEY "
-                          "(or pass --matrix euclidean / auto).")
+                              "(or pass --matrix euclidean / auto).")
+    n_pts = len(st.orders) + len(st.workers)
+    n_pairs = n_pts * (n_pts - 1) // 2
+    print(f"[5/7] matrix         N={n_pts} ({len(st.orders)} tasks + {len(st.workers)} workers)        "
+          f"{n_pairs} pairwise legs   mode={mode}")
     if mode == "euclidean" or (mode == "auto" and not have_key):
         st.matrix = TravelMatrix.euclidean(pts, refs)
         st.matrix_source = "euclidean" if mode == "euclidean" else "euclidean(no key)"
     else:
-        client = AmapClient(api_key=os.environ.get("AMAP_API_KEY", ""))
-        st.matrix = await build_travel_matrix(pts, refs, db=None, client=client,
-                                             mode="driving", symmetric=True)
+         # shared httpx session — avoids thousands of new TLS handshakes.
+         # No httpx-level retries: AmapClient does its own backoff-retry, the
+         # right tool for rate-limiting; fast compounded retries only make CUQPS
+         # worse.
+        import httpx
+        async with httpx.AsyncClient(timeout=15.0) as session:
+            client = AmapClient(api_key=os.environ.get("AMAP_API_KEY", ""),
+                               session=session, max_retries=max_retries)
+            # "lng,lat" endpoints from the local synthetic fallback, so the
+            # scan summary can flag which nodes are NOT backed by real AMap.
+            synth_set = {f["coords"] for f in st.fallbacks}
+            st.matrix = await build_travel_matrix(
+                pts, refs, db=None, client=client,
+                mode="driving", symmetric=True,
+                concurrency=concurrency, local_cache=cache,
+                synthetic_coords=synth_set or None,
+                )
         st.matrix_source = st.matrix.source
     m = st.matrix
-    pairs = m.n * (m.n - 1) // 2
-    print(f"[5/7] matrix         source={st.matrix_source}  N={m.n} "
-          f"({len(st.orders)} tasks + {len(st.workers)} workers)")
-    print(f"         {pairs} pairwise legs computed via {st.matrix_source}")
+    print(f"            done: {m.n} nodes, source={st.matrix_source}")
     _save(out, "matrix", st)
 
 
@@ -325,14 +533,15 @@ def step_export(args, out: Path, st: State) -> Path:
 
 
 # -- orchestration ----------------------------------------------------------
-def run(args, out: Path) -> Path:
+def run(args, out: Path, cache: "LocalCache | None" = None) -> Path:
     """Chain all seven steps in order, threading in-memory state + checkpoints."""
     st = State()
     st = step_hours(args, out)
     st = step_workers(args, out, st)
     st = step_tasks(args, out, st)
-    asyncio.run(step_geocode(st, args.city, args.coords, out))
-    asyncio.run(step_matrix(st, args.matrix, out))
+    asyncio.run(step_geocode(st, args.city, args.coords, out, cache=cache))
+    asyncio.run(step_matrix(st, args.matrix, out, args.concurrency,
+                           args.max_retries, cache=cache))
     step_solve(st, args, out)
     return step_export(args, out, st)
 
@@ -348,43 +557,44 @@ def _ensure_lookup(args, out, st: State) -> State:
     return st
 
 
-def cmd_hours(args, out: Path) -> int:
+def cmd_hours(args, out: Path, cache=None) -> int:
     step_hours(args, out)
     return 0
 
 
-def cmd_workers(args, out: Path) -> int:
+def cmd_workers(args, out: Path, cache=None) -> int:
     st = _load(out) if out.exists() else State()
     step_workers(args, out, st)
     return 0
 
 
-def cmd_tasks(args, out: Path) -> int:
+def cmd_tasks(args, out: Path, cache=None) -> int:
     st = _load(out) if out.exists() else State()
     st = _ensure_lookup(args, out, st)        # hours lookup is the only input
     step_tasks(args, out, st)                # run exactly once
     return 0
 
 
-async def _cmd_geocode(args, out: Path) -> int:
+async def _cmd_geocode(args, out: Path, cache: 'LocalCache | None' = None) -> int:
     st = _load(out) if out.exists() else State()
     st = _ensure_lookup(args, out, st)
     if not st.orders:                          # ensure tasks exist, don't re-run below
         st = step_tasks(args, out, st)
-    await step_geocode(st, args.city, args.coords, out)
+    await step_geocode(st, args.city, args.coords, out, cache=cache)
     return 0
 
 
-async def _cmd_matrix(args, out: Path) -> int:
+async def _cmd_matrix(args, out: Path, cache: 'LocalCache | None' = None) -> int:
     st = _load(out) if out.exists() else State()
     if not st.workers or not st.orders:
         raise SystemExit("ERROR: no geocoded workers/orders in --workdir; "
                           "run 'geocode' (or 'run') first.")
-    await step_matrix(st, args.matrix, out)
+    await step_matrix(st, args.matrix, out, args.concurrency,
+                      args.max_retries, cache=cache)
     return 0
 
 
-def cmd_solve(args, out: Path) -> int:
+def cmd_solve(args, out: Path, cache=None) -> int:
     st = _load(out) if out.exists() else State()
     if st.matrix is None:
         raise SystemExit("ERROR: no travel matrix in --workdir; "
@@ -393,7 +603,7 @@ def cmd_solve(args, out: Path) -> int:
     return 0
 
 
-def cmd_export(args, out: Path) -> int:
+def cmd_export(args, out: Path, cache=None) -> int:
     st = _load(out) if out.exists() else State()
     if st.result is None:
         raise SystemExit("ERROR: no solve result in --workdir; "
@@ -402,8 +612,8 @@ def cmd_export(args, out: Path) -> int:
     return 0
 
 
-def cmd_run(args, out: Path) -> int:
-    run(args, out)
+def cmd_run(args, out: Path, cache: "LocalCache | None" = None) -> int:
+    run(args, out, cache)
     return 0
 
 _COMMANDS = {
@@ -439,6 +649,15 @@ def _add_common(sp: argparse.ArgumentParser) -> None:
                     help="coord source: amap=require key; auto=synthetic if no key")
     sp.add_argument("--matrix", choices=["amap", "euclidean", "auto"], default="auto",
                     help="travel-matrix source: auto -> amap if key else euclidean")
+    sp.add_argument("--concurrency", type=int, default=3,
+                    help="AMap API calls in flight at once (lower avoids CUQPS throttle)")
+    sp.add_argument("--max-retries", type=int, default=5,
+                    help="retries per AMap call on transient / rate-limit responses")
+    sp.add_argument("--cache", default=None,
+                    help="SQLite file to persist/reuse AMap geocode + travel "
+                         "results across runs (skip to bypass caching)")
+    sp.add_argument("--no-cache", action="store_true",
+                    help="disable any --cache even if set")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -471,11 +690,27 @@ def main(argv: list[str] | None = None) -> int:
         p.print_help()
         return 0
     out = Path(args.workdir).absolute()
-    fn = _COMMANDS[args.cmd]
-    if args.cmd in _ASYNC:
-        return asyncio.run(fn(args, out))
-    return fn(args, out)
+
+    # ── open SQLite cache if requested ──
+    cache_path = args.cache if not args.no_cache else None
+    cache = LocalCache(cache_path) if cache_path else None
+    if cache is not None:
+        stats = cache._stats_sync()
+        print(f"[cache] SQLite cache opened at {cache_path}  "
+              f"(geocode={stats['geocode']} entries, "
+              f"travel={stats['travel']} entries)")
+    try:
+        fn = _COMMANDS[args.cmd]
+        if args.cmd in _ASYNC:
+            return asyncio.run(fn(args, out, cache))
+        return fn(args, out, cache)
+    finally:
+        if cache is not None:
+            cache.close()
+            print(f"[cache] SQLite cache closed ({cache_path})")
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+

@@ -1,6 +1,8 @@
 """Standalone single-day dispatch CLI (one script to hand to a user).
 
-Runs the full pipeline **in memory** - no database, no cache:
+Runs the full pipeline **in memory** -- optionally with a SQLite cache
+(``--cache`` flag) to persist AMap results across runs, but no database
+server:
 
     1 parse-hours  working_hours.xlsx      -> product -> working-hours lookup
     2 parse-workers workers.xlsx           -> workers (each with a 08:00-18:00 day)

@@ -6,7 +6,9 @@ two endpoints this system uses are wired. HTTP via httpx.
 
 from __future__ import annotations
 
+import asyncio
 import logging
+import random
 from enum import Enum
 
 import httpx
@@ -15,6 +17,48 @@ from ..models import Point2D
 
 log = logging.getLogger("or-engine")
 _BASE = "https://restapi.amap.com/v3"
+
+# AMap infocode -> human-readable meaning.  Keep this in sync with
+# https://lbs.amap.com/api/webservice/download
+_INFOCODES = {
+    "0":     "unknown error",
+    "10000": "unknown error",
+    "10001": "user has no quota for this service (service not granted to this key)",
+    "10002": "service is disabled for this key",
+    "10003": "daily quota exhausted — re-open the AMap console to check remaining calls per day",
+    "10004": "service is temporarily offline (outage on AMap's side)",
+    "10009": "user QPS (queries-per-second) exceeded — slow down the request rate",
+    "10010": "access forbidden — this key cannot call this service type",
+    "10011": "IP address is not in the whitelist for this key",
+    "10015": "daily quota exceeded (renew at midnight Beijing time)",
+    "20001": "invalid parameter — check that all required fields are present and well-formed",
+    "20002": "server engine internal error — retry may succeed",
+    "20003": "service is temporarily unavailable — retry",
+    "11001": "geocode result not found (address not indexed by AMap, try a less specific address)",
+    "11002": "geocode query exceeded QPS limit for geocoding service",
+    "40001": "invalid API key — check AMAP_API_KEY env var or .env file",
+    "40002": "key not bound to this service — enable this service in the AMap console",
+    "40003": "key type mismatch (Web Service key vs Web JS key)",
+    "40004": "key daily limit exceeded",
+    "40005": "key QPS limit exceeded",
+    "40006": "key IP whitelist mismatch",
+    "40008": "key expired",
+    "10021": "CUQPS exceeded — concurrent requests/second over this key's ceiling "
+             "(lower concurrency / back off and retry)",
+}
+
+# Transient / rate-limit infocodes that are safe to retry with backoff.
+_RETRYABLE_INFO = frozenset({
+    "10003", "10004", "10009", "10015", "10021",
+    "40004", "40005", "20002", "20003",
+})
+
+
+def _info_msg(code: str | None) -> str:
+    """Return a human-readable description for an AMap infocode, or a fallback."""
+    if code is None:
+        return "infocode not reported by API"
+    return _INFOCODES.get(code, f"unknown infocode {code!r} — see https://lbs.amap.com/api/webservice/download")
 
 
 def _parse_geom(geom: str) -> Point2D:
@@ -90,26 +134,62 @@ class AmapClient:
         api_key: str | None = None,
         timeout_s: float = 10.0,
         session: httpx.AsyncClient | None = None,
-    ):
+        max_retries: int = 5,
+      ):
         self.api_key = api_key or ""
         self.timeout_s = timeout_s
         self._session = session
+        self._max_retries = max_retries
 
     async def _get(self, path, **params) -> dict:
         url = f"{_BASE}/{path}"
         params["output"] = "json"
         if self.api_key:
             params["key"] = self.api_key
-        if self._session is not None:
-            r = await self._session.get(url, params=params)
-        else:
-            async with httpx.AsyncClient(timeout=self.timeout_s) as s:
-                r = await s.get(url, params=params)
-        r.raise_for_status()
-        body = r.json()
-        if body.get("status") == "1" and body.get("info") == "OK":
-            return body.get("data", body)
-        raise RuntimeError(f"amap api error: {body.get('info')} / {path}")
+
+        max_attempts = self._max_retries + 1
+        for attempt in range(max_attempts):
+            if self._session is not None:
+                r = await self._session.get(url, params=params)
+            else:
+                async with httpx.AsyncClient(timeout=self.timeout_s) as s:
+                    r = await s.get(url, params=params)
+
+            # Non-200: capture HTTP status + body text + infocode before raising
+            if r.status_code >= 400:
+                try:
+                     hb = r.json()
+                     code = hb.get("infocode")
+                except Exception:
+                     code = None
+                transient = r.status_code in (429, 500, 502, 503, 504)
+                if transient and attempt + 1 < max_attempts:
+                    await asyncio.sleep(self._backoff(attempt))
+                    continue
+                raise RuntimeError(
+                    f"amap http {r.status_code} {r.reason_phrase} "
+                    f"path={path} url={r.request.full_url} body={r.text[:500]!r} "
+                    f"           (attempt {attempt + 1}/{max_attempts}) "
+                    f"         \u2192 {_info_msg(code)}"
+                )
+
+            body = r.json()
+            if body.get("status") == "1" and body.get("info") == "OK":
+                return body.get("data", body)
+            infocode = body.get("infocode")
+            if infocode in _RETRYABLE_INFO and attempt + 1 < max_attempts:
+                await asyncio.sleep(self._backoff(attempt))
+                continue
+            raise RuntimeError(
+                f"amap api error: info={body.get('info')!r} infocode={infocode!r} "
+                f"path={path} body={body} "
+                f"attempt {attempt + 1}/{max_attempts}       \u2192 {_info_msg(infocode)}"
+            )
+
+    @staticmethod
+    def _backoff(attempt: int) -> float:
+        """Exponential backoff (2^attempt s, capped at 30s) + full jitter."""
+        return min(2.0 ** attempt, 30.0) * (0.5 + random.random() * 0.5)
 
     async def geocode(self, address: str, city: str = "") -> list[Geocode]:
         """Turn a free-text address into coordinates (top hits)."""

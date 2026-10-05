@@ -1,9 +1,12 @@
-"""storage — the single asyncpg/PostGIS persistence layer (:class:`DB`).
+"""storage — the persistence layer.
 
-No job queue, event log, or ORM: a dispatch runs synchronously, and the
-database stores workers/orders plus the cached Amap travel-time results.
+Provides two interchangeable backends for the travel-time cache:
+
+* :class:`DB` — asyncpg/PostGIS (used by the REST/MCP server)
+* :class:`LocalCache` — SQLite file (used by the CLI's ``--cache`` flag)
 """
 
+from .cache import LocalCache
 from .db import DB
 
-__all__ = ["DB"]
+__all__ = ["DB", "LocalCache"]

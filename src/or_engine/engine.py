@@ -3,7 +3,8 @@
 One async function takes workers + orders and returns a DispatchResult:
 
 1. geocode any missing addresses to coordinates (Amap),
-2. build the pairwise travel-time matrix (Amap, cached in PostGIS),
+2. build the pairwise travel-time matrix (Amap, cached in PostGIS or a
+   local SQLite cache -- see ``--cache``),
 3. solve the VRPTW (OR-Tools),
 4. optionally export to .xlsx.
 
@@ -21,6 +22,7 @@ from .models import DispatchResult, Order, Worker
 from .solver import solve_dispatch
 from .spatial.amap import AmapClient
 from .spatial.travel import TravelMatrix, build_travel_matrix
+from .storage.cache import LocalCache
 from .storage.db import DB
 
 log = logging.getLogger("or-engine")
@@ -35,25 +37,52 @@ async def geocode_missing(
     orders: list[Order],
     amap: AmapClient | None,
     city: str = "",
+    local_cache: LocalCache | None = None,
 ) -> None:
     """Fill missing home_point / site_point coordinates via Amap.
 
     ``city`` biases AMap geocoding for free-text addresses (e.g. "上海").
+    *local_cache* (a LocalCache) is checked before each geocode call;
+    successful results are written back so subsequent runs skip the API.
     """
     if amap is None:
         return
     for w in workers:
         if w.home_point is None and w.home_address:
+            # check cache first
+            if local_cache is not None:
+                hit = await local_cache.get_geocode(w.home_address, city)
+                if hit is not None:
+                    w.home_point = hit.location
+                    log.info("geocoded worker %s (%s) [cache]",
+                             w.name, w.home_point.to_str())
+                    continue
             hits = await amap.geocode(w.home_address, city=city)
             if hits:
                 w.home_point = hits[0].location
                 log.info("geocoded worker %s (%s)", w.name, w.home_point.to_str())
+                if local_cache is not None:
+                    await local_cache.save_geocode(
+                        w.home_address, city, hits[0].name or "",
+                        hits[0].location.lat, hits[0].location.lng)
     for o in orders:
         if o.site_point is None and o.site_address:
+            # check cache first
+            if local_cache is not None:
+                hit = await local_cache.get_geocode(o.site_address, city)
+                if hit is not None:
+                    o.site_point = hit.location
+                    log.info("geocoded order %s (%s) [cache]",
+                             o.order_no, o.site_point.to_str())
+                    continue
             hits = await amap.geocode(o.site_address, city=city)
             if hits:
                 o.site_point = hits[0].location
                 log.info("geocoded order %s (%s)", o.order_no, o.site_point.to_str())
+                if local_cache is not None:
+                    await local_cache.save_geocode(
+                        o.site_address, city, hits[0].name or "",
+                        hits[0].location.lat, hits[0].location.lng)
 
 
 async def build_matrix(
@@ -61,10 +90,11 @@ async def build_matrix(
     orders: list[Order],
     db: DB | None,
     amap: AmapClient | None,
+    local_cache: LocalCache | None = None,
     use_cache: bool = True,
     mode: str = "driving",
 ) -> TravelMatrix:
-    """Build the home+site travel matrix, using the PostGIS cache when given.
+    """Build the home+site travel matrix, using the PostGIS or SQLite cache.
 
     A single base *driving* matrix is built; each worker's transport mode is
     applied as a per-vehicle speed factor inside the solver, so the matrix
@@ -77,11 +107,11 @@ async def build_matrix(
     if missing:
         tail = "…" if len(missing) > 5 else ""
         raise ValueError(
-            "missing coordinates for: "
-            + ", ".join(missing[:5])
-            + tail
-            + " — geocode first"
-        )
+             "missing coordinates for: "
+             + ", ".join(missing[:5])
+             + tail
+             + " — geocode first"
+         )
     if amap is None:
         return TravelMatrix.euclidean(pts, refs)
 
@@ -90,18 +120,20 @@ async def build_matrix(
         refs=refs,
         client=amap,
         db=db,
+        local_cache=local_cache,
         mode=mode,
         symmetric=True,
         use_cache=use_cache,
-    )
+       )
 
 
 async def dispatch(
     workers: list[Worker],
     orders: list[Order],
-    *,
+     *,
     db: DB | None = None,
     amap: AmapClient | None = None,
+    local_cache: LocalCache | None = None,
     geocode: bool = True,
     use_cache: bool = True,
     export_to: str | None = None,
@@ -109,26 +141,28 @@ async def dispatch(
 ) -> DispatchResult:
     """Full flow: geocode -> cache-backed matrix -> solve -> (optional) xlsx.
 
-    db / amap may be None (pure in-memory run with an Euclidean matrix),
-    which keeps the engine runnable without any external dependency.
+    db / amap / local_cache may be None (pure in-memory run with an
+    Euclidean matrix), which keeps the engine runnable without any
+    external dependency.
     """
     if geocode:
-        await geocode_missing(workers, orders, amap)
+        await geocode_missing(workers, orders, amap, local_cache=local_cache)
 
     matrix = await build_matrix(
         workers,
         orders,
         db=db,
         amap=amap,
+        local_cache=local_cache,
         use_cache=use_cache,
-    )
+        )
 
     result = solve_dispatch(
         workers,
         orders,
         matrix,
         timeout_s=timeout_s,
-    )
+        )
 
     result.metadata["matrix_source"] = matrix.source
     if export_to is not None:
@@ -137,10 +171,10 @@ async def dispatch(
         log.info("wrote %s", out)
 
     log.info(
-        "dispatch: %d workers, %d orders, %d assigned, status=%s",
+         "dispatch: %d workers, %d orders, %d assigned, status=%s",
         len(workers),
         len(orders),
         len(orders) - len(result.unassigned_orders),
         result.status.value,
-    )
+        )
     return result
