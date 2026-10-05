@@ -1,4 +1,4 @@
-# Dispatch CLI — how to use the standalone single-day dispatcher
+# Dispatch CLI — how to use the standalone multi-day dispatcher
 
 `examples/dispatch_cli.py` is a **single, self-contained script** that turns an
 Excel install-list into a one-day routing plan. It runs the whole pipeline
@@ -70,7 +70,7 @@ row. A blank or `-` hours value is reported and the task using it is *dropped*
 
 `出行工具` `开车` → **car** (`car_sh`), `电瓶车` → **ebike** (affects travel
 time; a car is faster but may hit 上海 plate/time restrictions). Each worker is
-its own route, working an 08:00–18:00 day from 常驻地址.
+their own route across as many 08:00–18:00 days as needed (each worker resets to their home depot every day).
 
 ### `tasks.xlsx`  — the install orders
 | 序号 | 商家 | 地址 | 商品 | 联系人 | 订单总额 |
@@ -116,15 +116,15 @@ A representative console report (offline sample, 144 orders, 6 workers):
         6 workers     | by transport: {'car_sh': 2, 'ebike': 4}
 [3/7] parse-tasks     docs/tasks.xlsx     (+ product->hours lookup)
        KEPT 144 tasks    |  REMOVED 22   {'missing-product': 20, 'address-leak': 2}
-       total on-site service of KEPT = 614.0 h
-       quantity warnings (N>=5, flag-only): 5
+       每日服务总 614h  vs 单日能力 60h (10.2×)      | travel_obj=…s
+       quantity warnings (N>=5, matched, flag-only): 2
 [4/7] geocode        source=synthetic  city=上海   (no AMAP_API_KEY -> pseudo-geo)
 [5/7] matrix         source=euclidean  N=150  11175 pairwise legs
-[6/7] solve          engine=greedy-fallback  status=feasible
-       within 08:00-18:00: 18/144 tasks scheduled, 126 dropped   (penalty ∝ task time)
-       total on-site service = 614.0 h  vs capacity 60 h (10.2x)  | travel_obj=…s
+[6/7] solve          engine=greedy-multi-day  status=optimal
+       10 天排满   144/144 已排 · 0 未排          (value 优先级, 每天每工超窗 ≤1)
+       已排 ¥60,462 / 全部 ¥60,462    | 每日服务 614h vs 60h 能力 (10.2×)    | travel_obj=…s
 [7/7] export         -> result.xlsx
-       sheets: 结果  汇总  未分配(126)  移除(22)  数量警告(5)
+       sheets: 配置  结果  汇总  未分配(0)  移除(22)  数量警告(2)
 ```
 
 ---
@@ -178,12 +178,14 @@ brackets).
 | `--city` | — | `上海` | AMap city for geocode / driving |
 | `--out` | — | `result.xlsx` | output workbook |
 | `--workdir` | — | `./_run` | per-step JSON checkpoints dir |
-| `--day-start` | — | `08:00` | worker day start (`HH:MM`, seconds-of-day) |
+| `--day-start` | — | `08:00` | per-day window start (first-class daily time bucket; same window + same home depot every day) |
 | `--day-end`   | — | `18:00` | worker day end (**open route**: the last task must finish by this time; the return leg is not counted) |
-| `--max-orders` | — | *unbounded* | per-worker cap on number of stops (rarely needed; the day window usually binds first) |
+| `--max-orders` | — | *unbounded* | per-day per-worker cap on number of stops (rarely needed; the day window usually binds first). It bounds **how far each day** fills, hence how many days the loop needs |
 | `--timeout-s` | — | *run till solved* | OR-Tools wall-clock budget (seconds); reported in the output |
 | `--warn-qty` | — | `5` | flag `商品` lines whose parsed quantity ≥ this (flag-only, not capped) |
-| `--drop-by` | — | `time` | drop-penalty mode: `time` → penalty ∝ task service time (drop the *short* tasks first); `count` → flat per-task penalty |
+| `--drop-by` | — | `value` | fill/drop priority: **`value` (default)** → keep highest-value orders first (penalty ∝ 金额), `time` → keep high-time jobs, `count` → flat penalty. When a day is tight, **low-value / short jobs drop first** |
+| `--max-days` | — | `3650` | multi-day loop safety cap (default large ⇒ "as many days as needed" until all are scheduled or no progress is possible) |
+| `--depot-fallback` | — | `121.4737,31.2304` | central depot (`lng,lat`) used as a worker's home when they have no coordinate; default = Shanghai centre. Each worker still keeps *its own* depot across every day |
 | `--penalty-base` | — | `1e7` | base drop penalty (large ⇒ "schedule as many as fit", then trim) |
 | `--per-hour-k` | — | `1.0` | additive penalty per service-second (drop-penalty ∝ time) |
 | `--coords` | — | `auto` | coord source: `amap` (require key) / `auto` (synthetic if no key) |
@@ -193,17 +195,22 @@ brackets).
 
 ## 6. Output
 
-### `result.xlsx` — one row per route stop, plus three reporting sheets
+### `result.xlsx` — a config sheet first, then full per-stop / per-report rows
+A dispatcher should be able to open a sheet and act on it. **`配置`** is written
+first so the whole run is visible at a glance; the rest follow.
+
 | sheet | contents |
 | ----- | -------- |
-| **结果** | every assigned stop: 工人 / start / transport / 订单号 / 任务编号 / 商品 / 开始 / 到达 / 完成 / 顺序 / 站点 |
-| **汇总** | per-worker totals: 工人 / 站点数 / 出行分钟 / 行驶km / 时间窗 |
-| **未分配** | dropped task order numbers (fit the day's 08:00–18:00 capacity, dropped by drop-penalty priority) |
-| **移除** | tasks removed during parse, with reason: `missing-product`, `address-leak`, `unknown-hours` |
-| **数量警告** | `商品` lines whose parsed quantity ≥ `--warn-qty` (flag-only) |
+| **配置** | **the run + daily time bucket + per-worker depots.** Sections: 运行 (city / 坐标来源 / 矩阵来源 / 引擎 / 模式), **每日时间窗** (`--day-start`~`--day-end`, 实际使用天数, 终止原因, 每天每工超窗限额, 中心回退 depot), **丢弃/排入优先级** (`--drop-by`, base, k, 阈值, 最大天数), **统计** (订单总数 / 已排 / 未排 / 移除 + 已排¥ / 未排¥ / 总¥ / 利用率, and unassigned reasons when <100%), **师傅 × depot** (每工 坐标 + 来源〔已提供坐标 / 回退中心depot〕 + 可用时窗 + 日上限 + 总派单数), **每日概览** (天 / 派单数 / 服务工时 / 金额 / 超窗次数) |
+| **结果** | every assigned stop, **full order info** (14 cols): **日期 / 师傅 / 师傅ID / 顺序 / 订单编号 / 订单类型 / 商家 / 联系电话 / 安装地址 / 金额(¥) / 做单时长(h) / 预计上门 / 预计完工 / 是否超窗** — 联系电话 keeps the sheet's single “name/phone” value as-is |
+| **汇总** | per **(天, 师傅)** totals: **日期 / 师傅 / 师傅ID / 运输工具 / 派单数 / 总服务工时(h) / 总路程时长(min) / 总路程(km)** |
+| **未分配** | every dropped order, **full info**: 订单编号 / 订单类型 / 商家 / 联系电话 / 安装地址 / 金额(¥) / 做单时长(h) / 备注 (the 未排原因 is also summarised on 配置) |
+| **移除** | tasks removed during parse, **full info**: 订单编号 / 商家 / 联系电话 / 安装地址 / 金额(¥) / 做单时长(h) / 未匹配·非法商品行 / 原因 (`missing-product` / `address-leak` / `unknown-hours`) |
+| **数量警告** | `商品` lines whose parsed quantity ≥ `--warn-qty` (flag-only, matched products) |
 
-The console also prints a per-worker **route** (arrival / finish times) and the
-capacity utilisation (total on-site service vs. worker-hours capacity).
+The console also prints a **per-day** breakdown (天 / 派单数 / 服务工时 / 金额),
+an **end reason** (`all-scheduled` / `cap … days` / `stalled` / `no-progress`),
+and the capacity ratio (total on-site service vs. **daily** worker-hours).
 
 ---
 
@@ -215,10 +222,21 @@ These are the confirmed behavioural choices — override via the options above.
   optimiser *chooses* each order's start. An order contributes only its
   **service duration** (from 商品 → `working_hours`), inside a fixed
   08:00–18:00 window.
-* **Best-fit subset.** Only the orders that fit within 08:00–18:00 are
-  scheduled; the rest are reported, not forced. A task's **drop penalty is
-  proportional to its service time** (`--drop-by time`), so a 1-hour job is
-  easier to drop than a 3-hour one.
+* **As many days as needed, fill each day.** Each day the fleet's clock
+restarts at `--day-start`; the engine fills day 1, then **overflows the
+rest to day 2, 3, …** until every order is placed (or no day can make
+progress). Workers keep the **same home depot and the 08:00–18:00 window
+every day** (`--depot-fallback` supplies a central depot when a worker has
+no coordinate).
+* **Value-priority drop** (`--drop-by value`, **default**). When a day is
+tight it keeps the **highest-value orders and drops the cheap / short ones
+first** — the inverse of the old "drop the short jobs first". `--drop-by
+time` (∝ service time) and `--drop-by count` (flat) remain available.
+* **Open, over-long-tolerant routes.** A per-day route is *open* (the
+return leg is excluded from the objective / travel total) and may carry
+**at most one over-long order** (a stop finishing past `--day-end`) per
+worker per day, so no single long job is forced unassigned.
+
 * **Open route.** The 18:00 cutoff is the **last task's finish**; the
   home-return leg is excluded from both the objective and the reported travel
   total. Workers re-enter from their latest task's coordinates after each stop.
@@ -242,14 +260,17 @@ These are the confirmed behavioural choices — override via the options above.
   no `working_hours` row (`missing-product`), or the cell holds an address that
   leaked in (`address-leak`), or it has blank hours. These are deliberate
   removals, always reported.
-* **Very few tasks scheduled (大 number in 未分配)** — the sample day is
-  ~10× over worker capacity (614 h of service vs. 60 h of 08:00–18:00).
-  Widen the day (`--day-end`), add workers, or expect a subset — "schedule as
-  many as fit", not "schedule everything".
-* **`engine=greedy-fallback`** — OR-Tools couldn't solve the large optional+
-  disjunctive instance within the budget, so the built-in greedy heuristic ran
-  and (on large N) it's usually the *only* solver that returns in time. The
-  console and `result.json` always name the engine that produced the result.
+* **Spreads across many days** — the sample is 614 h of service vs. 60 h/day of
+6 workers (08:00–18:00), i.e. ~10× capacity. The multi-day engine fills the
+days (day 1, 2, …), so by default **all orders are placed** (`终止=all-
+scheduled`, 0 in 未分配). To see a single day instead, cap with `--max-days`
+or shorten `--day-end`; what can't fit then lands in **未分配** (full info)
+and its ¥ total appears in the 配置 统计 section.
+* **`engine=greedy-multi-day`** — the multi-day engine is a fast, per-day
+greedy (value-priority fill, one over-long overflow per worker/day) that
+scales to thousands of orders; it is what the CLI now uses. The single-day
+`solve_dispatch` OR-Tools path remains for the API. The console and
+`result.json` always name the engine that produced the result.
 * **Re-run a single step** — point it at `--workdir ./_run`; it loads the prior
   checkpoints and only re-runs its own stage (e.g. tune `--penalty-base` and
   re-run `solve` without re-geocoding).

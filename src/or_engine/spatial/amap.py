@@ -14,6 +14,7 @@ from enum import Enum
 import httpx
 
 from ..models import Point2D
+from .api_error import AmapAPIError, _NON_RETRYABLE
 
 log = logging.getLogger("or-engine")
 _BASE = "https://restapi.amap.com/v3"
@@ -51,6 +52,7 @@ _INFOCODES = {
 _RETRYABLE_INFO = frozenset({
     "10003", "10004", "10009", "10015", "10021",
     "40004", "40005", "20002", "20003",
+    "30001",
 })
 
 
@@ -166,12 +168,16 @@ class AmapClient:
                 if transient and attempt + 1 < max_attempts:
                     await asyncio.sleep(self._backoff(attempt))
                     continue
-                raise RuntimeError(
+                raise AmapAPIError(
                     f"amap http {r.status_code} {r.reason_phrase} "
                     f"path={path} url={r.request.full_url} body={r.text[:500]!r} "
                     f"           (attempt {attempt + 1}/{max_attempts}) "
-                    f"         \u2192 {_info_msg(code)}"
-                )
+                    f"         \u2192 {_info_msg(code)}",
+                   http_status=r.status_code,
+                   infocode=str(code) if code else None,
+                   retryable=transient,
+                   request_url=str(r.request.full_url),
+                   )
 
             body = r.json()
             if body.get("status") == "1" and body.get("info") == "OK":
@@ -180,11 +186,14 @@ class AmapClient:
             if infocode in _RETRYABLE_INFO and attempt + 1 < max_attempts:
                 await asyncio.sleep(self._backoff(attempt))
                 continue
-            raise RuntimeError(
+            raise AmapAPIError(
                 f"amap api error: info={body.get('info')!r} infocode={infocode!r} "
                 f"path={path} body={body} "
-                f"attempt {attempt + 1}/{max_attempts}       \u2192 {_info_msg(infocode)}"
-            )
+                f"attempt {attempt + 1}/{max_attempts}       \u2192 {_info_msg(infocode)}",
+                infocode=infocode,
+                retryable=infocode not in _NON_RETRYABLE,
+                request_url=f"{path}",
+                 )
 
     @staticmethod
     def _backoff(attempt: int) -> float:
@@ -215,7 +224,7 @@ class AmapClient:
         route = body.get("route") or {}
         paths = route.get("paths") or []
         if not paths:
-            raise RuntimeError("amap: no route origin->destination")
+            raise AmapAPIError("amap: no route origin->destination", retryable=False)
         first = paths[0]
         return DirectionResponse(
             distance_m=float(first.get("distance") or 0.0),

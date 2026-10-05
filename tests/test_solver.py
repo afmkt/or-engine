@@ -13,7 +13,7 @@ import asyncio
 import unittest
 
 from or_engine.models import Order, Point2D, TimeWindow, Worker
-from or_engine.solver import solve_dispatch
+from or_engine.solver import solve_dispatch, solve_dispatch_multi
 from or_engine.spatial.travel import build_travel_matrix, TravelMatrix
 
 
@@ -165,6 +165,61 @@ class TestTravelMatrixCache(unittest.TestCase):
             for j in range(n):
                 if i != j:
                     self.assertGreater(m.duration[i][j], 0.0)
+
+
+class TestMultiDaySolver(unittest.TestCase):
+    """Lock in the new multi-day (as many days as needed) dispatch behaviour."""
+
+    def _matrix(self, n_orders, n_workers, dur=0.5):
+        refs = [f"o{k+1}" for k in range(n_orders)] + [f"w{k+1}" for k in range(n_workers)]
+        n = len(refs)
+        dist = [[0.0 if i == j else 1000.0 for j in range(n)] for i in range(n)]
+        dur_mat = [[0.0 if i == j else dur for j in range(n)] for i in range(n)]
+        return TravelMatrix(node_refs=refs, distance=dist, duration=dur_mat, source="test")
+
+    def test_spills_to_multiple_days(self):
+        w = [Worker(id="w1", name="W", transport="car_sh",
+                    home_point=Point2D(lng=121.5, lat=31.24), max_orders=10)]
+        orders = [
+            Order(id=f"o{k}", order_no=f"A{k:03d}",
+                site_point=Point2D(lng=121.5 + 0.01 * k, lat=31.24 + 0.01 * k),
+                service_hours=3.0, amount=100.0 * k) for k in range(1, 7)
+        ]
+        for o in orders:
+            o.time_window = TimeWindow.from_hhmm("08:00", "18:00")
+        m = self._matrix(6, 1)
+        res = solve_dispatch_multi(
+            w, orders, m, day_start=8 * 3600, day_end=18 * 3600,
+            default_drop_penalty=1e9,
+        )
+        self.assertEqual(len(res.unassigned_orders), 0, "all 18h must be placed")
+        self.assertGreaterEqual((res.metadata or {}).get("n_days", 0), 2)
+        self.assertEqual((res.metadata or {}).get("termination", ""), "all-scheduled")
+        total_amt = (res.metadata or {}).get("amounts", {}).get("assigned", 0.0)
+        self.assertAlmostEqual(total_amt, 2100.0)
+        stops = list(sum((r.assignments for r in res.routes), []))
+        self.assertTrue(all(hasattr(st, "day") for st in stops))
+        per_day = {}
+        for r in res.routes:
+            for st in r.assignments:
+                per_day[st.day or r.day] = per_day.get(st.day or r.day, 0) + int(st.overflow)
+        for d, n in per_day.items():
+            self.assertLessEqual(n, 1, f"more than 1 overflow on day {d}")
+
+    def test_no_progress_stops(self):
+        w = [Worker(id="w1", name="W", transport="car_sh",
+                    home_point=Point2D(lng=121.5, lat=31.24))]
+        orders = [Order(id="o1", order_no="A001",
+                        site_point=Point2D(lng=121.5, lat=31.24),
+                        service_hours=100.0, amount=1.0)]
+        orders[0].time_window = TimeWindow.from_hhmm("08:00", "09:00")
+        m = self._matrix(1, 1)
+        res = solve_dispatch_multi(
+            w, orders, m, day_start=8 * 3600, day_end=9 * 3600,
+            max_days=50, allow_overflow=1, default_drop_penalty=1e9,
+        )
+        self.assertGreaterEqual(sum(len(r.assignments) for r in res.routes), 1)
+        self.assertLessEqual((res.metadata or {}).get("n_days", 0), 2)
 
 
 if __name__ == "__main__":

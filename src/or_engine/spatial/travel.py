@@ -46,6 +46,7 @@ async def _compute_pairs_amap(
     cache=None,
     distance: list[list[float]],
     duration: list[list[float]],
+    tracker=None,
 ) -> None:
     """Compute travel times for *pairs*, filling *distance*/*duration* in-place.
 
@@ -64,7 +65,15 @@ async def _compute_pairs_amap(
     async def _one(i: int, j: int) -> None:
         nonlocal completed
         async with sem:
-            resp = await client.direction(points[i], points[j], mode)
+            try:
+                resp = await client.direction(points[i], points[j], mode)
+            except Exception as exc:
+                if tracker is not None:
+                    from .api_error import record_direction_failure
+                    record_direction_failure(
+                        tracker, points[i].to_str(), points[j].to_str(),
+                        str(mode), exc)
+                raise
             if not resp.ok:
                 raise RuntimeError(
                     f"Amap direction failed {refs[i]}->{refs[j]}: "
@@ -111,6 +120,7 @@ async def build_travel_matrix(
     use_cache: bool = True,
     concurrency: int = 5,
     synthetic_coords: "set[str] | None" = None,
+    tracker=None,
 ) -> "TravelMatrix":
     """Return a :class:`TravelMatrix` over ``points`` (index-aligned
     with ``refs``).

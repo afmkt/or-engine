@@ -117,12 +117,18 @@ class RemovedTask:
     reason: str             # "missing-product" | "address-leak" | "no-product"
     lines: list[str]
     merchant: str | None = None
+    site_address: str | None = None
+    contact: str | None = None
+    amount: float | None = None
 
     def as_dict(self) -> dict:
         return {
             "order_no": self.order_no,
             "reason": self.reason,
             "merchant": self.merchant,
+            "site_address": self.site_address,
+            "contact": self.contact,
+            "amount": self.amount,
             "lines": self.lines,
         }
 
@@ -211,21 +217,28 @@ def import_tasks(
         total, parsed, offending = resolve_task_hours(product, hours_lookup)
 
         for ln in parsed:
-            if ln.qty >= warn_qty:
+            if ln.qty >= warn_qty and ln.matched_key is not None and ln.hours is not None:
                 qty_warnings.append({
                     "order_no": str(no), "line": ln.raw, "parsed_qty": ln.qty,
                     "matched": ln.matched_key, "hours_each": ln.hours,
                 })
 
         if product is None or not str(product).strip():
-            removed.append(RemovedTask(str(no), "no-product", [], merchant))
+            _amt = float(amount) if amount not in (None, "") else None
+            removed.append(RemovedTask(
+                str(no), "no-product", [], merchant,
+                site_address=str(addr) if addr else None,
+                contact=str(contact) if contact else None, amount=_amt))
             continue
         if offending:
             has_addr = any(_looks_address(x) for x in offending)
+            _amt = float(amount) if amount not in (None, "") else None
             removed.append(RemovedTask(
                 str(no),
-                 "address-leak" if has_addr else "missing-product",
-                offending, merchant))
+"address-leak" if has_addr else "missing-product",
+                offending, merchant,
+                site_address=str(addr) if addr else None,
+                contact=str(contact) if contact else None, amount=_amt))
             continue
 
         orders.append(Order(

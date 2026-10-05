@@ -137,8 +137,12 @@ def test_import_tasks_real_workbook_counts():
     reasons = {t.reason for t in removed}
     assert "missing-product" in reasons
     assert "address-leak" in reasons
-    # the '两折叠 x20' rows cross the qty threshold (flag-only, not capped)
-    assert any(q["parsed_qty"] == 20 for q in qty_warnings)
+    # qty warnings: only *matched* 商品 lines that cross the threshold are
+    # flagged here (unmatched lines are already removed as missing-product,
+    # not double-counted). With warn_qty=5 that leaves the 平开门 x11 / x14 rows.
+    assert len(qty_warnings) == 2
+    assert all(q["matched"] for q in qty_warnings)          # matched product, not missing
+    assert {q["parsed_qty"] for q in qty_warnings} == {11, 14}
 
 
 def test_task_with_one_unmatched_line_is_whole_removed(tmp_path):

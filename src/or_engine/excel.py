@@ -14,6 +14,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment, Font, PatternFill
 
 from .models import (
     DispatchResult,
@@ -235,24 +236,157 @@ def import_working_hours(
 
 # ── export API ──────────────────────────────────────────────────────────────
 _RESULT_HEADERS = [
-    "师傅",
-    "师傅ID",
-    "顺序",
-    "订单编号",
-    "订单类型",
-    "商家",
-    "安装地址",
-    "做单时长(h)",
-    "预计上门",
-    "预计完工",
+    "日期", "师傅", "师傅ID", "顺序", "订单编号", "订单类型", "商家",
+    "联系电话", "安装地址", "金额(¥)", "做单时长(h)",
+    "预计上门", "预计完工", "是否超窗",
 ]
 _SUMMARY_HEADERS = [
-    "师傅",
-    "派单数",
-    "总做单时长(h)",
-    "总路程时长(min)",
-    "总路程(km)",
+    "日期", "师傅", "师傅ID", "运输工具",
+    "派单数", "总服务工时(h)", "总路程时长(min)", "总路程(km)",
 ]
+_UNASSIGNED_HEADERS = [
+    "订单编号", "订单类型", "商家", "联系电话", "安装地址",
+    "金额(¥)", "做单时长(h)", "备注",
+]
+_REMOVED_HEADERS = [
+    "订单编号", "商家", "联系电话", "安装地址", "金额(¥)",
+    "做单时长(h)", "未匹配/非法商品行", "原因",
+]
+_QTY_HEADERS = [
+    "订单编号", "商品/行", "解析数量", "匹配商品", "单位工时(h)",
+]
+
+_HEADER_FONT = Font(bold=True, color="FFFFFF")
+_HEADER_FILL = PatternFill(start_color="4472C4", end_color="4472C4", patternType="solid")
+_SECTION_FONT = Font(bold=True, size=11, color="4472C4")
+_LABEL_FONT = Font(bold=True)
+
+
+def _style_header(ws):
+    for c in ws[1]:
+        c.font = _HEADER_FONT
+        c.fill = _HEADER_FILL
+        c.alignment = Alignment(horizontal="left", vertical="center")
+    ws.freeze_panes = "A2"
+
+
+def _amt(v) -> str:
+    try:
+        return "¥" + format(float(v), ",.0f")
+    except (TypeError, ValueError):
+        return str(v)
+
+
+def _write_config_sheet(wb: Workbook, cfg: dict) -> None:
+    """Render the run configuration as the first (置顶) sheet '配置'."""
+    ws = wb.active
+    ws.title = "配置"
+    ws.column_dimensions["A"].width = 22
+    ws.column_dimensions["B"].width = 56
+    ws.column_dimensions["C"].width = 26
+    ws.sheet_properties.tabColor = "4472C4"
+    r = 1
+
+    def put(label, value):
+        nonlocal r
+        ws.cell(row=r, column=1, value=label).font = _LABEL_FONT
+        ws.cell(row=r, column=2, value=_str(value)).alignment = Alignment(horizontal="left")
+        ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=3)
+        r += 1
+
+    def section(title):
+        nonlocal r
+        ws.cell(row=r, column=1, value=title).font = _SECTION_FONT
+        r += 1
+
+    put("生成时间", cfg.get("run_at", ""))
+    section("运行")
+    put("城市", cfg.get("city", ""))
+    put("坐标来源", cfg.get("coords_source", ""))
+    put("矩阵来源", cfg.get("matrix_source", ""))
+    put("求解引擎", cfg.get("engine", ""))
+    put("排程模式", cfg.get("mode", ""))
+
+    section("每日时间窗 / 排程")
+    put("每日时间窗", cfg.get("day_window", ""))
+    put("实际使用天数", cfg.get("days_used", ""))
+    put("终止原因", cfg.get("termination", ""))
+    put("每天每工超窗限额", cfg.get("allow_overflow", ""))
+    fb = cfg.get("depot_fallback")
+    put("中心回退 depot", (str(fb) if fb else "(每个师傅各自合成坐标)"))
+
+    section("丢弃 / 排入优先级 (--drop-by)")
+    put("模式", cfg.get("drop_by", ""))
+    put("惩罚基准 base", cfg.get("penalty_base", ""))
+    put("每小时 / 每单位 k", cfg.get("per_hour_k", ""))
+    put("数量告警阈值 N≥", cfg.get("warn_qty", ""))
+    put("最大天数(安全上限)", cfg.get("max_days", ""))
+
+    section("统计")
+    cnt = cfg.get("counts", {})
+    amt = cfg.get("amounts", {})
+    put("订单总数", cnt.get("total", ""))
+    put("已排入 / 未排入", f"{cnt.get('assigned','')} / {cnt.get('unassigned','')}")
+    put("已排金额 / 未排金额", f"{_amt(amt.get('assigned', 0))} / {_amt(amt.get('unassigned', 0))}")
+    put("总金额", _amt(amt.get("total", 0)))
+    util = cfg.get("utilization_pct", 0.0) or 0.0
+    put("利用率", f"{util:.1f}%" + ("" if util >= 100.0 else "   (未排单见『未分配』表)"))
+    unreasons = cfg.get("unassigned_reasons", {}) or {}
+    if unreasons:
+        txt = "、".join(f"{k}={v}" for k, v in unreasons.items())
+        note = ws.cell(row=r, column=1, value=f"未排原因: {txt}")
+        note.font = Font(color="C00000", italic=True)
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=3)
+        r += 1
+
+    section("师傅 × depot")
+    ws.cell(row=r, column=1, value="师傅").font = _HEADER_FONT
+    ws.cell(row=r, column=2, value="depot 坐标   [来源]").font = _HEADER_FONT
+    ws.cell(row=r, column=3, value="可用时窗 / 日上限 / 总派单").font = _HEADER_FONT
+    r += 1
+    for w in cfg.get("workers", []):
+        a = w.get("available_start", "") or ""
+        b = w.get("available_end", "") or ""
+        win = f"{a}-{b}" if (a or b) else "全天/不限"
+        ws.cell(row=r, column=1, value=f"{w.get('name','')} ({_str(w.get('transport',''))})")
+        ws.cell(row=r, column=2, value=f"{w.get('home','(无坐标)')}   [{w.get('home_source','')}]")
+        ws.cell(row=r, column=3,
+                value=f"{win} / 日{w.get('max_orders','∞')} / 总派{w.get('stops_all_days',0)}")
+        r += 1
+    if not cfg.get("workers"):
+        ws.cell(row=r + 1, column=2, value="(无师傅)").font = Font(italic=True)
+
+    section("每日概览")
+    ws.cell(row=r, column=1, value="天").font = _HEADER_FONT
+    ws.cell(row=r, column=2, value="派单数 / 服务工时").font = _HEADER_FONT
+    ws.cell(row=r, column=3, value="金额(¥)").font = _HEADER_FONT
+    r += 1
+    for d in cfg.get("day_summary", []):
+        ov = d.get("overflow", 0)
+        ws.cell(row=r, column=1, value=d.get("day", ""))
+        ws.cell(row=r, column=2,
+                value=f"{d.get('assigned',0)} 单 · {d.get('service_hours',0):.1f}h"
+                        + (f" · 超窗 {ov} 次" if ov else ""))
+        ws.cell(row=r, column=3, value=_amt(d.get("assigned_amount", 0.0)))
+        r += 1
+    ws.sheet_properties.tabColor = "4472C4"
+
+
+def _str(v) -> str:
+    if v is None:
+        return ""
+    if isinstance(v, float):
+        return format(v, ",.1f")
+    return str(v)
+
+
+def _transport(w) -> str:
+    m = getattr(w, "transport", None) or getattr(w, "mode", None)
+    if isinstance(m, str):
+        return m
+    if m is not None and hasattr(m, "value"):
+        return str(getattr(m, "value", m))
+    return ""
 
 
 def export_result(
@@ -262,78 +396,131 @@ def export_result(
     orders: list[Order] | None = None,
     removed: object | None = None,
     qty_warnings: object | None = None,
+    config: dict | None = None,
 ) -> Path:
-    """Write *result* to a .xlsx with sheets 结果 / 汇总 / (未分配) / (移除) / (数量警告).
+    """Write *result* to a .xlsx.
 
-    移除 lists tasks dropped during parsing (reason + offending lines); 数量警告
-    lists 商品 lines whose parsed quantity hit the warn threshold. Each extra sheet
-    is written only when its argument is a non-empty list.
+    Sheets in order: ``配置`` (when *config* is given), ``结果`` (per stop),
+    ``汇总`` (per 天 × 师傅 with 运输工具), then ``未分配`` / ``移除`` /
+    ``数量警告`` (each only when non-empty). Every row carries full 订单 / 商品 /
+    原因 so a dispatcher can act on it directly.
     """
     order_by_id = {o.id: o for o in (orders or [])}
     wb = Workbook()
 
-    ws = wb.active
-    ws.title = "结果"
+    if config:
+        _write_config_sheet(wb, config)
+        ws = wb.create_sheet("结果")
+    else:
+        ws = wb.active
+        ws.title = "结果"
+
+    # 结果 ──────────────────────────────────────────────────────
     ws.append(_RESULT_HEADERS)
     for ar in result.routes:
-        for st in ar.assignments:
-            o = order_by_id.get(st.order_id)
+        for st_ in ar.assignments:
+            o = order_by_id.get(st_.order_id)
             ws.append(
                 [
+                    f"第{st_.day or ar.day or 1}天",
                     ar.worker_name,
                     ar.worker_id,
-                    st.sequence + 1,
-                    st.order_no,
+                    st_.sequence + 1,
+                    st_.order_no,
                     o.order_type if o else "",
-                    o.merchant if o else "",
-                    o.site_address if o else (st.site.to_str() if st.site else ""),
+                    (o.merchant or "") if o else "",
+                    (o.contact or "") if o else "",
+                    (o.site_address or (st_.site.to_str() if st_.site else "")) if o else "",
+                    round((o.amount or 0.0), 2) if o is not None else 0.0,
                     round(o.service_hours, 2) if o else 0.0,
-                    _to_hhmm(st.arrival_s),
-                    _to_hhmm(st.departure_s),
+                    _to_hhmm(st_.arrival_s),
+                    _to_hhmm(st_.departure_s),
+                    "超窗" if getattr(st_, "overflow", False) else "",
                 ]
             )
+    _style_header(ws)
 
+    # 汇总 ──────────────────────────────────────────────────────
     ws2 = wb.create_sheet("汇总")
     ws2.append(_SUMMARY_HEADERS)
+    transport = {w.id: _transport(w) for w in (workers or [])}
+    agg: dict = {}
     for ar in result.routes:
+        key = (ar.day, ar.worker_id)
+        c = agg.setdefault(key, {
+            "name": ar.worker_name, "n": 0, "svc": 0.0, "trav": 0.0, "dist": 0.0,
+        })
+        c["n"] += len(ar.assignments)
+        c["svc"] += ar.total_service_s
+        c["trav"] += ar.total_travel_s
+        c["dist"] += ar.total_distance_m
+    for (day, wid) in sorted(agg):
+        c = agg[(day, wid)]
         ws2.append(
-            [
-                ar.worker_name,
-                len(ar.assignments),
-                round(ar.total_service_s / 3600, 2),
-                round(ar.total_travel_s / 60, 1),
-                round(ar.total_distance_m / 1000, 2),
-            ]
+            ["第%d天" % day, c["name"], wid, transport.get(wid, ""),
+            c["n"], round(c["svc"] / 3600, 2),
+            round(c["trav"] / 60, 1), round(c["dist"] / 1000, 2)]
         )
+    _style_header(ws2)
 
     if result.unassigned_orders:
         ws3 = wb.create_sheet("未分配")
-        ws3.append(["订单编号"])
+        ws3.append(_UNASSIGNED_HEADERS)
         for oid in result.unassigned_orders:
-            no = order_by_id.get(oid)
-            ws3.append([no.order_no if no else oid])
+            o = order_by_id.get(oid)
+            ws3.append(
+                [
+                    o.order_no if o else oid,
+                    o.order_type if o else "",
+                    (o.merchant or "") if o else "",
+                    (o.contact or "") if o else "",
+                    (o.site_address or "") if o else "",
+                    round((o.amount or 0.0), 2) if o else 0.0,
+                    round(o.service_hours, 2) if o else 0.0,
+                    "未在排程内落点(详见『配置』表)",
+                ]
+            )
+        _style_header(ws3)
 
     if removed:
         ws4 = wb.create_sheet("移除")
-        ws4.append(["序号", "商家", "原因", "未匹配商品行"])
+        ws4.append(_REMOVED_HEADERS)
         for t in removed:
-            ws4.append([t.order_no, t.merchant or "", t.reason, " | ".join(t.lines)])
+            d = t.as_dict()
+            ws4.append(
+                [
+                    d.get("order_no", ""),
+                    d.get("merchant") or "",
+                    d.get("contact") or "",
+                    d.get("site_address") or "",
+                    round(d.get("amount") or 0.0, 2),
+                    "",
+                    " ; ".join(d.get("lines") or []) or "—",
+                    d.get("reason", ""),
+                ]
+            )
+        _style_header(ws4)
 
     if qty_warnings:
         ws5 = wb.create_sheet("数量警告")
-        ws5.append(["序号", "商品行", "解析数量", "匹配商品", "单位工时(h)"])
+        ws5.append(_QTY_HEADERS)
         for q in qty_warnings:
-            ws5.append([
-                q.get("order_no", ""),
-                q.get("line", ""),
-                q.get("parsed_qty"),
-                q.get("matched") or "无匹配",
-                q.get("hours_each"),
-            ])
+            ws5.append(
+                [
+                    q.get("order_no", ""),
+                    q.get("line", ""),
+                    q.get("parsed_qty"),
+                    q.get("matched") or "无匹配",
+                    q.get("hours_each"),
+                ]
+            )
+        _style_header(ws5)
 
     out = Path(path)
     wb.save(out)
     return out
+
+
 def _to_hhmm(seconds: float | None) -> str:
     if seconds is None:
         return ""

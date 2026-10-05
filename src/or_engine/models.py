@@ -187,6 +187,8 @@ class OrderStop(BaseModel):
     arrival_s: int  # seconds since midnight
     departure_s: int  # arrival + service time
     sequence: int
+    day: int = 1         # the worker-day this stop belongs to (multi-day runs)
+    overflow: bool = False    # finishes after the day window (the overflow slot)
 
 
 class AssignRoute(BaseModel):
@@ -194,6 +196,7 @@ class AssignRoute(BaseModel):
 
     worker_id: str
     worker_name: str
+    day: int = 1
     assignments: list[OrderStop] = Field(default_factory=list)
     total_service_s: float = 0.0
     total_travel_s: float = 0.0

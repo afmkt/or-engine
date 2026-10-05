@@ -162,6 +162,203 @@ def solve_dispatch(
         return result
 
 
+# ── multi-day greedy (CLI default) ────────────────────────────────────────────
+def solve_dispatch_multi(
+    workers: list[Worker],
+    orders: list[Order],
+    matrix: TravelMatrix,
+      *,
+    per_worker_matrices: dict[str, TravelMatrix] | None = None,
+    day_start: int = 8 * 3600,
+    day_end: int = 18 * 3600,
+    max_days: int = 3650,
+    allow_overflow: int = 1,
+    default_drop_penalty: float | None = _DEFAULT_DROP_PENALTY,
+) -> DispatchResult:
+    """Fill *workers* across as many days as needed, one window per day.
+
+    Each day every worker starts fresh at its *home depot* (the matrix node for
+    that worker; the home location is fixed across all days -- the per-day reset
+    is only the clock, not the origin).  The day window is [day_start, day_end];
+    orders that don't fit a worker that day carry over to the next day
+    ("fill day 1, overflow to day 2").
+
+      * value-priority fill: orders are placed high-to-low ``drop_penalty`` so
+        high-value orders claim the better (low-travel) slots first.
+      * one overflow stop per worker per day (``allow_overflow``): a worker may
+        finish its LAST stop after ``day_end`` -- this lets a single over-long
+        order (> the day window) still be served; once the overflow slot is spent,
+        the worker's remaining stops must fit within the window.
+      * termination: the loop stops when a day places zero orders (nothing left
+        any worker can take) or ``max_days`` is hit, so it always terminates.
+
+    Node mapping mirrors ``step_matrix`` (refs = [o:<no>...] + [w:<id>...]):
+    orders occupy the first ``n_orders`` nodes, each worker's home the
+    ``n_orders+v``-th node; the matrix is symmetric, so
+    ``duration[home][order]`` is a real leg.
+    """
+    if not workers:
+        raise ValueError("at least one worker is required")
+    if not orders:
+        return DispatchResult(routes=[], status=DispatchStatus.OPTIMAL)
+
+    pwm = per_worker_matrices or {}
+    matrix_for = lambda w: pwm[w.id] if w.id in pwm else matrix
+    n_orders = len(orders)
+    n_v = len(workers)
+    factor = [factor_for(w) for w in workers]
+
+    # orders first (0..n_orders-1); each worker's home depot at n_orders + v
+    order_node = {o.id: i for i, o in enumerate(orders)}
+    depot_node = {w.id: n_orders + v for v, w in enumerate(workers)}
+
+    caps = [float(w.capacity) if w.capacity is not None else _BIG for w in workers]
+    cap_orders = [w.max_orders or 0 for w in workers]
+
+    service = {o.id: int(o.service_seconds) for o in orders}
+    amount = {o.id: (o.amount or 0.0) for o in orders}
+    window_hours = (day_end - day_start) / 3600.0
+
+    def order_reason(o: Order, termination: str) -> str:
+        if o.service_hours > window_hours + 1e-6:
+            return (f"服务时长 {o.service_hours:g}h 超过单日上限 "
+                   f"{window_hours:g}h — 需更长窗口或拆分")
+        if termination == "max_days":
+            return f"超过 --max-days={max_days} 仍有余量，需增加师傅/天数或放宽窗口"
+        return "所有师傅当日已满，需增加师傅或放宽时间窗"
+
+    routes: list[AssignRoute] = []
+    remaining = list(orders)
+    placed_ids: set[str] = set()
+    day = 0
+    days_used = 0
+    day_summary: list[dict] = []
+    termination = "all-scheduled"
+    fallback_penalty = default_drop_penalty if default_drop_penalty is not None else 0.0
+
+    def place_day(day_num: int) -> tuple[list[AssignRoute], set[str], bool]:
+        clock = [int(day_start)] * n_v
+        cur = [depot_node[w.id] for w in workers]
+        used = [0.0] * n_v
+        overflow_used = [0] * n_v
+        routes_d = [AssignRoute(worker_id=w.id, worker_name=w.name, day=day_num)
+                     for w in workers]
+        placed_here: set[str] = set()
+        # value-priority: high value first, then larger service (better fill)
+        for o in sorted(
+             remaining,
+             key=lambda o: (
+                bool(getattr(o, "optional", False)),
+                 -(o.drop_penalty if o.drop_penalty is not None else fallback_penalty),
+                 -o.service_seconds,
+                 str(o.order_no),
+             ),
+         ):
+            idx = order_node[o.id]
+            best = None           # (key, v, arrival, depart, overflow, raw_leg)
+            for v in range(n_v):
+                w = workers[v]
+                if cap_orders[v] and len(routes_d[v].assignments) >= cap_orders[v]:
+                    continue
+                if used[v] + (o.demand or 0.0) > caps[v]:
+                    continue
+                mv = matrix_for(w)
+                raw = int(round(mv.duration[cur[v]][idx] * factor[v]))
+                t = max(clock[v], int(day_start)) + raw        # wait for window open
+                dep = t + service[o.id]
+                over = dep > int(day_end)
+                if over and (allow_overflow <= 0 or overflow_used[v] >= allow_overflow):
+                    continue            # no in-window slot and overflow already spent
+                # in-window preferred; an overflow stop (finishing after the
+                # window) is only used as a last resort when no worker fits
+                key = t if not over else (int(day_end) + t + raw)
+                if best is None or key < best[0]:
+                    best = (key, v, t, dep, over, raw)
+            if best is None:
+                continue
+            _, v, t, dep, over, raw = best
+            w = workers[v]
+            mv = matrix_for(w)
+            dr = routes_d[v]
+            dr.assignments.append(OrderStop(
+                order_id=o.id, order_no=o.order_no, site=o.site_point,
+                arrival_s=int(t), departure_s=int(dep),
+                sequence=len(dr.assignments), day=day_num, overflow=over,
+             ))
+            dr.total_service_s += service[o.id]
+            dr.total_travel_s += raw
+            dr.total_distance_m += mv.distance[cur[v]][idx]
+            used[v] += o.demand or 0.0
+            clock[v] = int(dep)
+            cur[v] = idx
+            if over:
+                overflow_used[v] += 1
+            placed_here.add(o.id)
+        nonempty = [r for r in routes_d if r.assignments]
+        placed_any = len(placed_here) > 0
+        return nonempty, placed_here, placed_any
+
+    while remaining:
+        day += 1
+        if day > max_days:
+            termination = "max_days"
+            break
+        day_routes, placed, placed_any = place_day(day)
+        for r in day_routes:
+            routes.append(r)
+            for stp in r.assignments:
+                placed_ids.add(stp.order_id)
+        if not placed_any:
+             # nothing left that any worker can take (no-progress guard)
+            break
+        remaining = [o for o in remaining if o.id not in placed_ids]
+        days_used = day
+        placed_days = placed or set()
+        day_summary.append({
+             "day": day,
+             "assigned": len(placed_days),
+             "service_hours": round(
+                 sum(service[o.id] for o in orders if o.id in placed_days) / 3600.0, 2),
+             "assigned_amount": round(sum(amount[o.id] for o in orders if o.id in placed_days), 2),
+         })
+
+    unassigned = [o.id for o in remaining]
+    status = DispatchStatus.OPTIMAL if not unassigned else DispatchStatus.FEASIBLE
+    total_travel = sum(r.total_travel_s for r in routes)
+    assigned_amount = sum(amount[o.id] for o in orders if o.id in placed_ids)
+    total_amount = sum(amount.values())
+    dropped = [o.id for o in orders
+               if getattr(o, "optional", False) and o.id in unassigned]
+    md = {
+         "engine": "greedy-multi-day",
+         "note": "greedy-multi-day",
+         "n_workers": n_v,
+         "n_orders": n_orders,
+         "n_days": days_used,
+         "n_assigned": len(placed_ids),
+         "n_unassigned": len(unassigned),
+         "dropped_order_ids": dropped,
+         "termination": termination,
+         "day_start": int(day_start),
+         "day_end": int(day_end),
+         "allow_overflow": allow_overflow,
+         "day_summary": day_summary,
+         "unassigned_reasons": {o.order_no: order_reason(o, termination)
+                                 for o in remaining},
+         "amounts": {
+              "assigned": round(assigned_amount, 2),
+              "unassigned": round(total_amount - assigned_amount, 2),
+              "total": round(total_amount, 2),
+          },
+      }
+    return DispatchResult(
+        routes=sorted(routes, key=lambda r: (r.day, r.worker_name)),
+        unassigned_orders=unassigned,
+        status=status,
+        objective_value=total_travel,
+        solve_time_s=None,
+        metadata=md,
+      )
 def factor_for(w: Worker) -> float:
     """Per-worker speed factor from transport mode (ebike slower than car)."""
     from .config import settings

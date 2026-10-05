@@ -1,0 +1,16 @@
+[
+  {
+    "order_no": "44",
+    "line": "平开门 x11（950x2400,单包套,内左开）",
+    "parsed_qty": 11,
+    "matched": "平开门",
+    "hours_each": 1.25
+  },
+  {
+    "order_no": "77",
+    "line": "平开门 x14（900x2400,单包套,内左开）",
+    "parsed_qty": 14,
+    "matched": "平开门",
+    "hours_each": 1.25
+  }
+]

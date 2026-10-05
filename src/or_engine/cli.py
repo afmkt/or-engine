@@ -34,7 +34,9 @@ from pathlib import Path
 
 from .excel import export_result, import_workers
 from .models import DispatchResult, Order, Point2D, Worker
-from .spatial.amap import AmapClient
+from .spatial.amap import AmapClient, AmapAPIError
+from .spatial.api_error import record_geocode_failure, record_direction_failure
+from .spatial.failures import FailureTracker
 from .spatial.travel import TravelMatrix, build_travel_matrix
 from .storage.cache import LocalCache
 from .solver import solve_dispatch
@@ -82,6 +84,7 @@ class State:
     # than a real AMap geocode, so AMap-vs-fallback is preserved across the
     # pipeline. Each entry: {kind, key, address, coords("lng,lat")}.
     fallbacks: list = field(default_factory=list)
+    failures: FailureTracker = field(default_factory=FailureTracker)
 
 
 # -- checkpoint I/O to --workdir --------------------------------------------
@@ -136,6 +139,10 @@ def _save(path: Path, step: str, st: State) -> None:
                        "duration": m.duration, "source": m.source})
     elif step == "result" and st.result is not None:
         w("result", st.result.model_dump(mode="json"))
+         # persist failure records across runs
+    if st.failures:
+        st.failures.save_path(path)
+
 
 
 def _load(path: Path) -> State:
@@ -182,6 +189,11 @@ def _load(path: Path) -> State:
             st.result = DispatchResult.model_validate(d)
         except Exception:
             st.result = None      # export will re-run solve if needed
+        # load cross-run API failure records
+    try:
+        st.failures = FailureTracker.load_path(path)
+    except Exception:
+        pass
     return st
 
 
@@ -203,7 +215,8 @@ def _synth_coords(addr: str) -> Point2D:
 
 async def _one_geocode(client: AmapClient, addr: str, city: str,
                        cache: "LocalCache | None" = None,
-                       stats: "dict | None" = None):
+                       stats: "dict | None" = None,
+                       tracker: "FailureTracker | None" = None):
     """"Call AMap geocode for one address, logging each outcome live.
 
             Returns the first Geocode hit, or None on miss / HTTP / parse error.
@@ -214,6 +227,15 @@ async def _one_geocode(client: AmapClient, addr: str, city: str,
     def _bump(key: str) -> None:
         if stats is not None:
             stats[key] = stats.get(key, 0) + 1
+
+    # skip blocked (non-retryable) failures from prior runs
+    key = f"{addr}|{city}"
+    if tracker is not None and tracker.is_blocked("geocode", key):
+        rec = tracker.lookup("geocode", key)
+        _bump("skipped_blocked")
+        tag = rec.reason if rec else "non-retryable"
+        print(f" [replay] SKIP {addr!r} city={city!r} ({tag})", flush=True)
+        return None
 
     if cache is not None:
         hit = await cache.get_geocode(addr, city)
@@ -230,6 +252,15 @@ async def _one_geocode(client: AmapClient, addr: str, city: str,
                   flush=True)
     try:
         hits = await client.geocode(addr, city=city)
+
+    except AmapAPIError as e:
+        # record it; non-retryable fails get skipped next run
+        if tracker is not None:
+            record_geocode_failure(tracker, addr, city, e)
+        _bump("failed")
+        tag = "RETRY" if e.retryable else "NO-RETRY"
+        print(f" <- ERROR infocode={e.infocode} [{tag}] {e.message}", flush=True)
+        return None
     except Exception as e:                               # surface, do not abort
         _bump("failed")
         print(f"               <-  ERROR    {type(e).__name__}: {e}", flush=True)
@@ -268,7 +299,8 @@ async def _geocode_amap(st: State, city: str,
             continue
         if w.home_address:
             hit = await _one_geocode(client, w.home_address, city,
-                                     cache=cache, stats=stats)
+                                     cache=cache, stats=stats,
+                                     tracker=st.failures)
             if hit is not None:
                 w.home_point = hit.location
         if w.home_point is None:
@@ -285,7 +317,8 @@ async def _geocode_amap(st: State, city: str,
             continue
         if o.site_address:
             hit = await _one_geocode(client, o.site_address, city,
-                                     cache=cache, stats=stats)
+                                     cache=cache, stats=stats,
+                                     tracker=st.failures)
             if hit is not None:
                 o.site_point = hit.location
         if o.site_point is None:
@@ -364,6 +397,9 @@ def print_geocode_cache_summary(cache, stats: dict,
 
 async def step_geocode(st: State, city: str, mode: str, out: Path,
                        cache: "LocalCache | None" = None) -> None:
+    # replay cross-run failure summary
+    if len(st.failures) > 0:
+        st.failures.print_replay_summary()
     have_key = bool(os.environ.get("AMAP_API_KEY"))
     n = total_failed = 0
     cache_stats: dict = {}
@@ -414,6 +450,8 @@ async def step_matrix(st: State, mode: str, out: Path,
     n_pairs = n_pts * (n_pts - 1) // 2
     print(f"[5/7] matrix         N={n_pts} ({len(st.orders)} tasks + {len(st.workers)} workers)        "
           f"{n_pairs} pairwise legs   mode={mode}")
+    if len(st.failures) > 0:
+        st.failures.print_replay_summary("matrix")
     if mode == "euclidean" or (mode == "auto" and not have_key):
         st.matrix = TravelMatrix.euclidean(pts, refs)
         st.matrix_source = "euclidean" if mode == "euclidean" else "euclidean(no key)"
@@ -429,11 +467,13 @@ async def step_matrix(st: State, mode: str, out: Path,
             # "lng,lat" endpoints from the local synthetic fallback, so the
             # scan summary can flag which nodes are NOT backed by real AMap.
             synth_set = {f["coords"] for f in st.fallbacks}
+            st.failures.print_replay_summary()
             st.matrix = await build_travel_matrix(
                 pts, refs, db=None, client=client,
                 mode="driving", symmetric=True,
                 concurrency=concurrency, local_cache=cache,
                 synthetic_coords=synth_set or None,
+                tracker=st.failures,
                 )
         st.matrix_source = st.matrix.source
     m = st.matrix
@@ -658,6 +698,8 @@ def _add_common(sp: argparse.ArgumentParser) -> None:
                          "results across runs (skip to bypass caching)")
     sp.add_argument("--no-cache", action="store_true",
                     help="disable any --cache even if set")
+    sp.add_argument("--clean-failures", action="store_true",
+                    help="wipe api_failures.json; after fixing root cause")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -690,6 +732,16 @@ def main(argv: list[str] | None = None) -> int:
         p.print_help()
         return 0
     out = Path(args.workdir).absolute()
+
+    # --clean-failures: wipe api_failures.json before loading
+    if getattr(args, "clean_failures", False):
+        import shutil
+        fp = out / "api_failures.json"
+        if fp.exists():
+            shutil.unlink(fp)
+            print(f"[clean-failures] wiped {fp}", flush=True)
+        else:
+            print(f"[clean-failures] no api_failures.json to wipe", flush=True)
 
     # ── open SQLite cache if requested ──
     cache_path = args.cache if not args.no_cache else None

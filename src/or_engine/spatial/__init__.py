@@ -7,6 +7,8 @@ they never touch the Amap HTTP API or the PostGIS cache directly.
 from .amap import AmapClient, DirectionResponse, Geocode, TransportMode
 from .distance import build_euclidean_matrix, euclidean_m, haversine
 from .travel import TravelMatrix, build_travel_matrix
+from .api_error import AmapAPIError, record_geocode_failure, record_direction_failure
+from .failures import FailureTracker, FailureRecord
 
 __all__ = [
     "AmapClient",
