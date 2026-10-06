@@ -1,2463 +1,2463 @@
 {
   "routes": [
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 1,
       "assignments": [
         {
-          "order_id": "ce860720-85cc-4857-b402-facd54d4171e",
-          "order_no": "147",
+          "order_id": "2b247a1b-98d4-4ca5-940d-4abb09682d7e",
+          "order_no": "77",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.25776
+            "lng": 121.655137,
+            "lat": 31.221236
           },
-          "arrival_s": 30471,
-          "departure_s": 93471,
+          "arrival_s": 31528,
+          "departure_s": 94528,
           "sequence": 0,
           "day": 1,
           "overflow": true
         }
       ],
       "total_service_s": 63000.0,
-      "total_travel_s": 1671.0,
-      "total_distance_m": 16705.587593416934
+      "total_travel_s": 2728.0,
+      "total_distance_m": 50560.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 1,
       "assignments": [
         {
-          "order_id": "6f9ea3c4-49fe-471c-949b-f6d57ad5dadb",
-          "order_no": "77",
+          "order_id": "c69216bb-3413-4373-b21d-d1e49d712f3d",
+          "order_no": "147",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.213615
+            "lng": 121.180713,
+            "lat": 31.041863
           },
-          "arrival_s": 30461,
-          "departure_s": 93461,
+          "arrival_s": 31771,
+          "departure_s": 94771,
           "sequence": 0,
           "day": 1,
           "overflow": true
         }
       ],
       "total_service_s": 63000.0,
-      "total_travel_s": 1661.0,
-      "total_distance_m": 16607.831767985852
+      "total_travel_s": 2971.0,
+      "total_distance_m": 37710.0
     },
     {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
       "worker_name": "杨德逍",
       "day": 1,
       "assignments": [
         {
-          "order_id": "7a0f70bd-9986-4210-aee2-ab0a856a3740",
-          "order_no": "62",
-          "site": {
-            "lng": 121.3028,
-            "lat": 31.12339
-          },
-          "arrival_s": 32021,
-          "departure_s": 74321,
-          "sequence": 0,
-          "day": 1,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 42300.0,
-      "total_travel_s": 3221.0,
-      "total_distance_m": 20128.588829857843
-    },
-    {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
-      "day": 1,
-      "assignments": [
-        {
-          "order_id": "71409140-d1a6-42a7-9e4d-ab3d68378948",
-          "order_no": "140",
-          "site": {
-            "lng": 121.3028,
-            "lat": 31.178425
-          },
-          "arrival_s": 31562,
-          "departure_s": 72962,
-          "sequence": 0,
-          "day": 1,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 41400.0,
-      "total_travel_s": 2762.0,
-      "total_distance_m": 17260.892349941012
-    },
-    {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
-      "worker_name": "赵云",
-      "day": 1,
-      "assignments": [
-        {
-          "order_id": "09705950-a2d6-4127-a87b-443016f833a8",
-          "order_no": "44",
-          "site": {
-            "lng": 121.30175,
-            "lat": 31.33102
-          },
-          "arrival_s": 31964,
-          "departure_s": 81464,
-          "sequence": 0,
-          "day": 1,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 49500.0,
-      "total_travel_s": 3164.0,
-      "total_distance_m": 19774.73937429501
-    },
-    {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
-      "worker_name": "邱宏靖",
-      "day": 1,
-      "assignments": [
-        {
-          "order_id": "edaa049a-491c-4b1c-92ef-c523e601ce19",
+          "order_id": "a9f33e79-41c3-42e2-b411-95082090a1fc",
           "order_no": "118",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.25506
+            "lng": 121.635387,
+            "lat": 31.197951
           },
-          "arrival_s": 31444,
-          "departure_s": 84544,
+          "arrival_s": 32866,
+          "departure_s": 85966,
           "sequence": 0,
           "day": 1,
           "overflow": true
         }
       ],
       "total_service_s": 53100.0,
-      "total_travel_s": 2644.0,
-      "total_distance_m": 16523.187198249707
+      "total_travel_s": 4066.0,
+      "total_distance_m": 45494.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
-      "worker_name": "何玉利",
-      "day": 2,
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 1,
       "assignments": [
         {
-          "order_id": "3f032875-0bb4-4bc7-b236-361a8a6149d5",
-          "order_no": "26",
+          "order_id": "cacbfd1e-8003-4c14-9c4b-fc57fa36e828",
+          "order_no": "44",
           "site": {
-            "lng": 121.3028,
-            "lat": 31.084195
+            "lng": 121.581262,
+            "lat": 31.237119
           },
-          "arrival_s": 31095,
-          "departure_s": 72495,
+          "arrival_s": 32803,
+          "departure_s": 82303,
           "sequence": 0,
-          "day": 2,
+          "day": 1,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 49500.0,
+      "total_travel_s": 4003.0,
+      "total_distance_m": 34423.0
+    },
+    {
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
+      "worker_name": "赵云",
+      "day": 1,
+      "assignments": [
+        {
+          "order_id": "ed86880e-0c4b-485e-b8ca-d40806798124",
+          "order_no": "140",
+          "site": {
+            "lng": 121.475605,
+            "lat": 31.206669
+          },
+          "arrival_s": 32485,
+          "departure_s": 73885,
+          "sequence": 0,
+          "day": 1,
           "overflow": true
         }
       ],
       "total_service_s": 41400.0,
-      "total_travel_s": 2295.0,
-      "total_distance_m": 22948.87131810303
+      "total_travel_s": 3685.0,
+      "total_distance_m": 40464.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
-      "worker_name": "杜豪豪",
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
+      "worker_name": "邱宏靖",
+      "day": 1,
+      "assignments": [
+        {
+          "order_id": "46fdbbad-8b94-41ef-8b81-a5807b148a62",
+          "order_no": "62",
+          "site": {
+            "lng": 121.364615,
+            "lat": 31.145639
+          },
+          "arrival_s": 31422,
+          "departure_s": 73722,
+          "sequence": 0,
+          "day": 1,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 42300.0,
+      "total_travel_s": 2622.0,
+      "total_distance_m": 24434.0
+    },
+    {
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
+      "worker_name": "何玉利",
       "day": 2,
       "assignments": [
         {
-          "order_id": "5715e862-34c3-42a3-90af-2696220d96c6",
+          "order_id": "057e20e0-a693-4e36-92a4-e570c25ef257",
           "order_no": "18",
           "site": {
-            "lng": 121.3,
-            "lat": 31.408555
+            "lng": 121.607574,
+            "lat": 31.286179
           },
-          "arrival_s": 31369,
-          "departure_s": 68269,
+          "arrival_s": 31375,
+          "departure_s": 68275,
           "sequence": 0,
           "day": 2,
           "overflow": true
         }
       ],
       "total_service_s": 36900.0,
-      "total_travel_s": 2569.0,
-      "total_distance_m": 25693.83437716084
+      "total_travel_s": 2575.0,
+      "total_distance_m": 43263.0
     },
     {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
-      "worker_name": "杨德逍",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
+      "worker_name": "杜豪豪",
       "day": 2,
       "assignments": [
         {
-          "order_id": "39a9b5a6-63b9-4bd6-8107-da5a04481401",
-          "order_no": "154",
+          "order_id": "8e076ef7-0b5a-40a5-8e6c-f6f0bf8911ea",
+          "order_no": "166",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.00189
+            "lng": 121.405709,
+            "lat": 31.617293
           },
-          "arrival_s": 33613,
-          "departure_s": 65113,
+          "arrival_s": 34791,
+          "departure_s": 69891,
           "sequence": 0,
           "day": 2,
           "overflow": true
         }
       ],
-      "total_service_s": 31500.0,
-      "total_travel_s": 4813.0,
-      "total_distance_m": 30084.022681957063
+      "total_service_s": 35100.0,
+      "total_travel_s": 5991.0,
+      "total_distance_m": 116008.0
     },
     {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
+      "worker_name": "杨德逍",
       "day": 2,
       "assignments": [
         {
-          "order_id": "07562183-4a26-415c-b725-30458bb6e90c",
-          "order_no": "46",
+          "order_id": "aa9c8e22-a7c1-4ef2-88e9-86a738dec21c",
+          "order_no": "154",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.177525
+            "lng": 121.718532,
+            "lat": 31.180914
           },
-          "arrival_s": 31597,
-          "departure_s": 63097,
+          "arrival_s": 33034,
+          "departure_s": 64534,
           "sequence": 0,
           "day": 2,
           "overflow": false
         },
         {
-          "order_id": "6e46a805-0301-4f9b-8248-780f06c3c2b7",
+          "order_id": "450b1ee5-c58a-4007-b19d-df3ab1ca1a49",
           "order_no": "63",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.332055
+            "lng": 121.615574,
+            "lat": 31.264979
           },
-          "arrival_s": 65830,
-          "departure_s": 95530,
+          "arrival_s": 67089,
+          "departure_s": 96789,
           "sequence": 1,
           "day": 2,
           "overflow": true
         }
       ],
       "total_service_s": 61200.0,
-      "total_travel_s": 5530.0,
-      "total_distance_m": 34564.52276023195
+      "total_travel_s": 6789.0,
+      "total_distance_m": 75261.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
-      "worker_name": "赵云",
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
       "day": 2,
       "assignments": [
         {
-          "order_id": "0a4e84d4-9ea3-4532-87a8-9dcd2a2aee61",
+          "order_id": "cb2a6d6e-4f6d-43bb-9c01-6668a701a981",
           "order_no": "145",
           "site": {
             "lng": 121.3028,
             "lat": 31.33615
           },
-          "arrival_s": 32003,
-          "departure_s": 65303,
+          "arrival_s": 31158,
+          "departure_s": 64458,
           "sequence": 0,
+          "day": 2,
+          "overflow": false
+        },
+        {
+          "order_id": "36130e7a-d94e-4557-89a8-2f41eb83324e",
+          "order_no": "89",
+          "site": {
+            "lng": 121.532046,
+            "lat": 31.280222
+          },
+          "arrival_s": 67538,
+          "departure_s": 95438,
+          "sequence": 1,
           "day": 2,
           "overflow": true
         }
       ],
-      "total_service_s": 33300.0,
-      "total_travel_s": 3203.0,
-      "total_distance_m": 20017.310660561932
+      "total_service_s": 61200.0,
+      "total_travel_s": 5438.0,
+      "total_distance_m": 45606.0
     },
     {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
+      "worker_name": "赵云",
+      "day": 2,
+      "assignments": [
+        {
+          "order_id": "c2a8443c-7199-48fa-a116-ad3f527df67a",
+          "order_no": "46",
+          "site": {
+            "lng": 121.380462,
+            "lat": 31.151745
+          },
+          "arrival_s": 32429,
+          "departure_s": 63929,
+          "sequence": 0,
+          "day": 2,
+          "overflow": false
+        },
+        {
+          "order_id": "ccb51a96-65ca-49d9-bcd7-7b15dc034e13",
+          "order_no": "141",
+          "site": {
+            "lng": 121.343413,
+            "lat": 30.734755
+          },
+          "arrival_s": 69115,
+          "departure_s": 97015,
+          "sequence": 1,
+          "day": 2,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 59400.0,
+      "total_travel_s": 8815.0,
+      "total_distance_m": 92379.0
+    },
+    {
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
       "worker_name": "邱宏靖",
       "day": 2,
       "assignments": [
         {
-          "order_id": "ffd132f8-c6e3-4e10-9bb6-0c32bb4e7e1c",
-          "order_no": "166",
+          "order_id": "f2f19e17-b265-4b40-bd97-01c70b025947",
+          "order_no": "26",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.36234
+            "lng": 121.192423,
+            "lat": 31.010456
           },
-          "arrival_s": 32313,
-          "departure_s": 67413,
+          "arrival_s": 31322,
+          "departure_s": 72722,
           "sequence": 0,
           "day": 2,
           "overflow": true
         }
       ],
-      "total_service_s": 35100.0,
-      "total_travel_s": 3513.0,
-      "total_distance_m": 21955.479160206407
+      "total_service_s": 41400.0,
+      "total_travel_s": 2522.0,
+      "total_distance_m": 12235.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 3,
       "assignments": [
         {
-          "order_id": "ef8532c7-36fa-4e22-8148-646499bbb61c",
-          "order_no": "141",
+          "order_id": "49f5369b-e918-44b9-84b7-04c42f2f178b",
+          "order_no": "19",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.155655
+            "lng": 121.52423,
+            "lat": 31.144078
           },
-          "arrival_s": 30647,
-          "departure_s": 58547,
+          "arrival_s": 31719,
+          "departure_s": 58719,
           "sequence": 0,
           "day": 3,
           "overflow": false
         },
         {
-          "order_id": "caf286d4-d8e6-4dd4-ad51-262255498dae",
-          "order_no": "112",
+          "order_id": "39974402-4864-4da3-a8d5-68f3861ce121",
+          "order_no": "150",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.36612
+            "lng": 121.43112,
+            "lat": 31.361162
           },
-          "arrival_s": 60873,
-          "departure_s": 85173,
+          "arrival_s": 60614,
+          "departure_s": 85814,
           "sequence": 1,
           "day": 3,
           "overflow": true
         }
       ],
       "total_service_s": 52200.0,
-      "total_travel_s": 4173.0,
-      "total_distance_m": 41730.460472458384
+      "total_travel_s": 4814.0,
+      "total_distance_m": 80348.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 3,
       "assignments": [
         {
-          "order_id": "9403a045-bb6b-4b90-a7e5-ac20f1675c52",
-          "order_no": "89",
+          "order_id": "5c4488e2-f331-465f-aaea-142a69c23308",
+          "order_no": "1",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.41265
+            "lng": 121.66886,
+            "lat": 31.211369
           },
-          "arrival_s": 31402,
-          "departure_s": 59302,
+          "arrival_s": 31716,
+          "departure_s": 58716,
           "sequence": 0,
           "day": 3,
           "overflow": false
         },
         {
-          "order_id": "0e4426e5-b2f4-4daf-bed3-f92db1243a22",
-          "order_no": "33",
-          "site": {
-            "lng": 121.3,
-            "lat": 31.352755
-          },
-          "arrival_s": 59964,
-          "departure_s": 86064,
-          "sequence": 1,
-          "day": 3,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 54000.0,
-      "total_travel_s": 3264.0,
-      "total_distance_m": 32641.765738345188
-    },
-    {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
-      "worker_name": "杨德逍",
-      "day": 3,
-      "assignments": [
-        {
-          "order_id": "03e924fe-0fdf-4052-b76b-56064f49d8e3",
-          "order_no": "158",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.092295
-          },
-          "arrival_s": 32376,
-          "departure_s": 59376,
-          "sequence": 0,
-          "day": 3,
-          "overflow": false
-        },
-        {
-          "order_id": "0913fb12-53b1-426f-8d86-05ccde799307",
-          "order_no": "135",
-          "site": {
-            "lng": 121.30315,
-            "lat": 31.09423
-          },
-          "arrival_s": 59412,
-          "departure_s": 84612,
-          "sequence": 1,
-          "day": 3,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 52200.0,
-      "total_travel_s": 3612.0,
-      "total_distance_m": 22574.770612516502
-    },
-    {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
-      "day": 3,
-      "assignments": [
-        {
-          "order_id": "20e23b6a-ca2a-4ad4-ab6e-8f8c280a90b4",
-          "order_no": "19",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.042165
-          },
-          "arrival_s": 33042,
-          "departure_s": 60042,
-          "sequence": 0,
-          "day": 3,
-          "overflow": false
-        },
-        {
-          "order_id": "b1b84d9d-3cb2-42e5-80ec-71be338b286d",
+          "order_id": "8c5c5be1-f7d5-4e06-b74e-9f9d724d047a",
           "order_no": "119",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.218025
+            "lng": 121.532908,
+            "lat": 31.316956
           },
-          "arrival_s": 63152,
-          "departure_s": 87452,
+          "arrival_s": 60535,
+          "departure_s": 84835,
           "sequence": 1,
           "day": 3,
           "overflow": true
         }
       ],
       "total_service_s": 51300.0,
-      "total_travel_s": 7352.0,
-      "total_distance_m": 45954.23526502936
+      "total_travel_s": 4735.0,
+      "total_distance_m": 73747.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
+      "worker_name": "杨德逍",
+      "day": 3,
+      "assignments": [
+        {
+          "order_id": "912f3a32-1b5c-4f5f-817f-4066ebfecf8c",
+          "order_no": "33",
+          "site": {
+            "lng": 121.533375,
+            "lat": 31.227821
+          },
+          "arrival_s": 31688,
+          "departure_s": 57788,
+          "sequence": 0,
+          "day": 3,
+          "overflow": false
+        },
+        {
+          "order_id": "03b4cb23-d46a-4acf-9542-6bbec083266c",
+          "order_no": "3",
+          "site": {
+            "lng": 121.488149,
+            "lat": 31.162298
+          },
+          "arrival_s": 59817,
+          "departure_s": 84117,
+          "sequence": 1,
+          "day": 3,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 50400.0,
+      "total_travel_s": 4917.0,
+      "total_distance_m": 39418.0
+    },
+    {
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 3,
+      "assignments": [
+        {
+          "order_id": "8cc34508-b501-4b51-9a1c-304069748b8d",
+          "order_no": "158",
+          "site": {
+            "lng": 121.291955,
+            "lat": 31.222169
+          },
+          "arrival_s": 30208,
+          "departure_s": 57208,
+          "sequence": 0,
+          "day": 3,
+          "overflow": false
+        },
+        {
+          "order_id": "34c86d1f-bbdf-4ff2-9f8a-365feeae93ba",
+          "order_no": "159",
+          "site": {
+            "lng": 121.371694,
+            "lat": 31.214124
+          },
+          "arrival_s": 58930,
+          "departure_s": 83230,
+          "sequence": 1,
+          "day": 3,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 51300.0,
+      "total_travel_s": 3130.0,
+      "total_distance_m": 15334.0
+    },
+    {
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
       "worker_name": "赵云",
       "day": 3,
       "assignments": [
         {
-          "order_id": "9dec906c-26cb-4dd4-87aa-5135c8920ebf",
-          "order_no": "15",
+          "order_id": "555b029a-0dff-4d8b-a2f4-be28aab9b1db",
+          "order_no": "135",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.267075
+            "lng": 121.237713,
+            "lat": 31.11331
           },
-          "arrival_s": 31497,
-          "departure_s": 58497,
+          "arrival_s": 33554,
+          "departure_s": 58754,
           "sequence": 0,
           "day": 3,
           "overflow": false
         },
         {
-          "order_id": "033d90ae-5cf2-4480-bffc-f9dcd5ca0c95",
+          "order_id": "67cd6de1-e353-4859-a3d8-19fb4ed16398",
           "order_no": "90",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.355455
+            "lng": 121.197245,
+            "lat": 31.099616
           },
-          "arrival_s": 60060,
-          "departure_s": 85260,
+          "arrival_s": 59719,
+          "departure_s": 84919,
           "sequence": 1,
           "day": 3,
           "overflow": true
         }
       ],
-      "total_service_s": 52200.0,
-      "total_travel_s": 4260.0,
-      "total_distance_m": 26625.84701993045
+      "total_service_s": 50400.0,
+      "total_travel_s": 5719.0,
+      "total_distance_m": 56783.0
     },
     {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
       "worker_name": "邱宏靖",
       "day": 3,
       "assignments": [
         {
-          "order_id": "26d05107-6ed0-4318-bfc3-accb4ea63ede",
-          "order_no": "1",
+          "order_id": "bc824fa3-6796-4078-b46e-fadea11ace9d",
+          "order_no": "15",
           "site": {
-            "lng": 121.3,
-            "lat": 31.056565
+            "lng": 121.192073,
+            "lat": 31.003185
           },
-          "arrival_s": 32859,
-          "departure_s": 59859,
+          "arrival_s": 31131,
+          "departure_s": 58131,
           "sequence": 0,
           "day": 3,
           "overflow": false
         },
         {
-          "order_id": "5c767a78-c985-4e51-a018-56ba648bb690",
-          "order_no": "150",
+          "order_id": "6850c3f3-6ca1-4572-9c42-a8f864a056e0",
+          "order_no": "112",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.051345
+            "lng": 121.227841,
+            "lat": 31.016739
           },
-          "arrival_s": 59951,
-          "departure_s": 85151,
+          "arrival_s": 59233,
+          "departure_s": 83533,
           "sequence": 1,
           "day": 3,
           "overflow": true
         }
       ],
-      "total_service_s": 52200.0,
-      "total_travel_s": 4151.0,
-      "total_distance_m": 25947.839148546307
+      "total_service_s": 51300.0,
+      "total_travel_s": 3433.0,
+      "total_distance_m": 16941.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 4,
       "assignments": [
         {
-          "order_id": "a344fc3c-cee4-49e9-ab45-943ee67a4518",
-          "order_no": "159",
+          "order_id": "0bb93de5-c7f3-4bb3-8dcc-e7d04a85f426",
+          "order_no": "108",
           "site": {
-            "lng": 121.30315,
-            "lat": 31.269235
+            "lng": 121.584276,
+            "lat": 31.244738
           },
-          "arrival_s": 30479,
-          "departure_s": 54779,
+          "arrival_s": 31708,
+          "departure_s": 53308,
           "sequence": 0,
           "day": 4,
           "overflow": false
         },
         {
-          "order_id": "6d6f0596-9507-418d-998a-cd037a745068",
-          "order_no": "137",
+          "order_id": "bf25e4c6-e8db-4db2-9238-0016c8f54f4e",
+          "order_no": "9",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.28773
+            "lng": 121.692491,
+            "lat": 31.192956
           },
-          "arrival_s": 54984,
-          "departure_s": 75684,
+          "arrival_s": 54830,
+          "departure_s": 76430,
           "sequence": 1,
           "day": 4,
           "overflow": true
         }
       ],
-      "total_service_s": 45000.0,
-      "total_travel_s": 1884.0,
-      "total_distance_m": 18831.453704758467
+      "total_service_s": 43200.0,
+      "total_travel_s": 4430.0,
+      "total_distance_m": 69084.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 4,
       "assignments": [
         {
-          "order_id": "b086dfc7-3637-44fc-bf9c-89feac3a7f2d",
-          "order_no": "3",
+          "order_id": "4701e289-ba82-4e3d-8787-b163ed2fb19b",
+          "order_no": "107",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.43704
+            "lng": 121.364703,
+            "lat": 31.221407
           },
-          "arrival_s": 31608,
-          "departure_s": 55908,
+          "arrival_s": 30268,
+          "departure_s": 51868,
           "sequence": 0,
           "day": 4,
           "overflow": false
         },
         {
-          "order_id": "6567d414-71a5-41c7-9646-47990a8c4b43",
-          "order_no": "157",
+          "order_id": "c13fbd0c-914d-4960-855a-0e61d38bea06",
+          "order_no": "104",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.446355
+            "lng": 121.290456,
+            "lat": 31.209542
           },
-          "arrival_s": 56011,
-          "departure_s": 77611,
+          "arrival_s": 53136,
+          "departure_s": 73836,
           "sequence": 1,
           "day": 4,
           "overflow": true
         }
       ],
-      "total_service_s": 45900.0,
-      "total_travel_s": 2911.0,
-      "total_distance_m": 29110.15623552457
+      "total_service_s": 42300.0,
+      "total_travel_s": 2736.0,
+      "total_distance_m": 18751.0
     },
     {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
       "worker_name": "杨德逍",
       "day": 4,
       "assignments": [
         {
-          "order_id": "8f8e033d-73ad-4572-811a-048654c0cb12",
+          "order_id": "c2795fbb-857f-41a6-8cb7-f2be4b134f2a",
           "order_no": "116",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.112005
+            "lng": 121.368682,
+            "lat": 31.1053
           },
-          "arrival_s": 32156,
-          "departure_s": 53756,
+          "arrival_s": 30421,
+          "departure_s": 52021,
           "sequence": 0,
           "day": 4,
           "overflow": false
         },
         {
-          "order_id": "846b80a8-52d0-4d5f-89a7-e58574a8a80c",
-          "order_no": "9",
+          "order_id": "c8512668-767f-4a49-bc34-9fec56f023c3",
+          "order_no": "137",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.019575
+            "lng": 121.768394,
+            "lat": 31.110492
           },
-          "arrival_s": 55391,
-          "departure_s": 76991,
+          "arrival_s": 56181,
+          "departure_s": 76881,
           "sequence": 1,
           "day": 4,
           "overflow": true
         }
       ],
-      "total_service_s": 43200.0,
-      "total_travel_s": 4991.0,
-      "total_distance_m": 31190.05079085989
+      "total_service_s": 42300.0,
+      "total_travel_s": 5781.0,
+      "total_distance_m": 63190.0
     },
     {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
       "worker_name": "王意江",
       "day": 4,
       "assignments": [
         {
-          "order_id": "36ebf572-9e46-4399-99ec-d70d0ce87ba9",
+          "order_id": "22733f1e-d0c1-47fc-92f6-3926d4dee24c",
           "order_no": "120",
           "site": {
-            "lng": 121.3,
-            "lat": 31.15714
+            "lng": 121.449719,
+            "lat": 31.270092
           },
-          "arrival_s": 31748,
-          "departure_s": 53348,
+          "arrival_s": 31704,
+          "departure_s": 53304,
           "sequence": 0,
           "day": 4,
           "overflow": false
         },
         {
-          "order_id": "d30e6db2-6df3-4aea-80c9-c9116435d77b",
-          "order_no": "138",
+          "order_id": "139c45a3-9105-4f18-b17c-bdafb3daf058",
+          "order_no": "13",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.178875
+            "lng": 121.240332,
+            "lat": 31.014761
           },
-          "arrival_s": 53734,
-          "departure_s": 75334,
+          "arrival_s": 57758,
+          "departure_s": 77558,
           "sequence": 1,
           "day": 4,
           "overflow": true
         }
       ],
-      "total_service_s": 43200.0,
-      "total_travel_s": 3334.0,
-      "total_distance_m": 20836.307175600057
+      "total_service_s": 41400.0,
+      "total_travel_s": 7358.0,
+      "total_distance_m": 71820.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
       "worker_name": "赵云",
       "day": 4,
       "assignments": [
         {
-          "order_id": "14e1bb85-744a-4511-8eb7-d5649acd5371",
-          "order_no": "108",
+          "order_id": "2434f3d0-c8a5-4c0e-a9cd-6ad2818d0d67",
+          "order_no": "157",
           "site": {
-            "lng": 121.3,
-            "lat": 31.374355
+            "lng": 121.337554,
+            "lat": 31.156047
           },
-          "arrival_s": 32469,
-          "departure_s": 54069,
+          "arrival_s": 32517,
+          "departure_s": 54117,
           "sequence": 0,
           "day": 4,
           "overflow": false
         },
         {
-          "order_id": "c72d85a7-159c-4bd2-8fd9-36082ba2b96e",
+          "order_id": "7390c9be-0aba-43a1-a8fb-d87cc17467a2",
           "order_no": "153",
           "site": {
-            "lng": 121.3028,
-            "lat": 31.11601
+            "lng": 121.180713,
+            "lat": 31.041863
           },
-          "arrival_s": 58638,
-          "departure_s": 79338,
+          "arrival_s": 57453,
+          "departure_s": 78153,
           "sequence": 1,
           "day": 4,
           "overflow": true
         }
       ],
       "total_service_s": 42300.0,
-      "total_travel_s": 8238.0,
-      "total_distance_m": 51488.242662539444
+      "total_travel_s": 7053.0,
+      "total_distance_m": 65722.0
     },
     {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
       "worker_name": "邱宏靖",
       "day": 4,
       "assignments": [
         {
-          "order_id": "a16c3a36-46d8-441e-81c8-347623f4d46f",
-          "order_no": "107",
+          "order_id": "161484aa-fecd-4e6b-a710-6e234657a4e9",
+          "order_no": "138",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.238995
+            "lng": 121.379831,
+            "lat": 31.169552
           },
-          "arrival_s": 31423,
-          "departure_s": 53023,
+          "arrival_s": 31704,
+          "departure_s": 53304,
           "sequence": 0,
           "day": 4,
           "overflow": false
         },
         {
-          "order_id": "49f952aa-b45c-4e60-b6ac-974a868f225c",
-          "order_no": "104",
+          "order_id": "bf5df450-27fb-4cbb-9d9a-b2268af99ede",
+          "order_no": "124",
           "site": {
-            "lng": 121.3014,
-            "lat": 31.15264
+            "lng": 121.422462,
+            "lat": 31.194512
           },
-          "arrival_s": 54550,
-          "departure_s": 75250,
+          "arrival_s": 54934,
+          "departure_s": 74734,
           "sequence": 1,
           "day": 4,
           "overflow": true
         }
       ],
-      "total_service_s": 42300.0,
-      "total_travel_s": 4150.0,
-      "total_distance_m": 25939.474490516805
+      "total_service_s": 41400.0,
+      "total_travel_s": 4534.0,
+      "total_distance_m": 34383.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 5,
       "assignments": [
         {
-          "order_id": "f885e27f-427c-4b92-a4cb-29d91a6aa335",
-          "order_no": "124",
+          "order_id": "52661c21-abf7-496e-a744-ffec4f2dd416",
+          "order_no": "22",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.10989
+            "lng": 121.456268,
+            "lat": 31.157058
           },
-          "arrival_s": 30920,
-          "departure_s": 50720,
+          "arrival_s": 31626,
+          "departure_s": 51426,
           "sequence": 0,
           "day": 5,
           "overflow": false
         },
         {
-          "order_id": "28f63587-de7f-449c-b660-66ac17d28157",
-          "order_no": "123",
+          "order_id": "06186e7f-36ce-498a-b0dd-36306247f1d6",
+          "order_no": "156",
           "site": {
-            "lng": 121.3028,
-            "lat": 31.10584
+            "lng": 121.456191,
+            "lat": 31.258024
           },
-          "arrival_s": 50769,
-          "departure_s": 69669,
+          "arrival_s": 53287,
+          "departure_s": 69487,
           "sequence": 1,
           "day": 5,
           "overflow": true
         }
       ],
-      "total_service_s": 38700.0,
-      "total_travel_s": 2169.0,
-      "total_distance_m": 21687.73127475364
+      "total_service_s": 36000.0,
+      "total_travel_s": 4687.0,
+      "total_distance_m": 62674.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 5,
       "assignments": [
         {
-          "order_id": "26768a42-1d9e-4c73-b434-57ff0bdc9789",
-          "order_no": "13",
+          "order_id": "7d372033-c7dc-4f9d-ada2-87aebe5085b1",
+          "order_no": "131",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.39501
+            "lng": 121.456268,
+            "lat": 31.274178
           },
-          "arrival_s": 31252,
-          "departure_s": 51052,
+          "arrival_s": 30345,
+          "departure_s": 50145,
           "sequence": 0,
           "day": 5,
           "overflow": false
         },
         {
-          "order_id": "90a6a67d-8d06-46e8-93a5-99232afba5b0",
+          "order_id": "74270e11-23b5-47ba-8a7d-f10d9b4c6b73",
           "order_no": "122",
           "site": {
             "lng": 121.3014,
             "lat": 31.39348
           },
-          "arrival_s": 51070,
-          "departure_s": 69070,
+          "arrival_s": 52240,
+          "departure_s": 70240,
           "sequence": 1,
           "day": 5,
           "overflow": true
         }
       ],
       "total_service_s": 37800.0,
-      "total_travel_s": 2470.0,
-      "total_distance_m": 24703.77157224286
+      "total_travel_s": 3640.0,
+      "total_distance_m": 50093.0
     },
     {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
       "worker_name": "杨德逍",
       "day": 5,
       "assignments": [
         {
-          "order_id": "c1d3c1e9-a27b-4977-a746-b1aa6b074da1",
-          "order_no": "22",
+          "order_id": "0c4ec047-1413-48e9-93ed-e5b7421d6f2f",
+          "order_no": "160",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.07623
+            "lng": 121.431807,
+            "lat": 31.14079
           },
-          "arrival_s": 32595,
-          "departure_s": 52395,
+          "arrival_s": 30917,
+          "departure_s": 50717,
           "sequence": 0,
           "day": 5,
           "overflow": false
         },
         {
-          "order_id": "1eabbfe0-a7d5-4f1e-ace3-fd90dc6571a6",
-          "order_no": "156",
+          "order_id": "ebe65545-4fc6-4466-b083-9b6d9b5eca64",
+          "order_no": "161",
           "site": {
-            "lng": 121.3,
-            "lat": 31.44559
+            "lng": 121.419359,
+            "lat": 31.038579
           },
-          "arrival_s": 58928,
-          "departure_s": 75128,
+          "arrival_s": 52991,
+          "departure_s": 69191,
           "sequence": 1,
           "day": 5,
           "overflow": true
         }
       ],
       "total_service_s": 36000.0,
-      "total_travel_s": 10328.0,
-      "total_distance_m": 64546.06882129183
+      "total_travel_s": 4391.0,
+      "total_distance_m": 36629.0
     },
     {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
       "worker_name": "王意江",
       "day": 5,
       "assignments": [
         {
-          "order_id": "a9aeb10d-ef60-42e1-bdd2-d18a7fa3a841",
-          "order_no": "117",
+          "order_id": "b5a7deb0-2fc4-4867-bea6-97cd22a4aafa",
+          "order_no": "123",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.089325
+            "lng": 121.3028,
+            "lat": 31.10584
           },
-          "arrival_s": 32428,
-          "departure_s": 51328,
+          "arrival_s": 31962,
+          "departure_s": 50862,
           "sequence": 0,
           "day": 5,
           "overflow": false
         },
         {
-          "order_id": "cefe2dd8-4e51-4f56-8cbf-1fe3a0c1cbd9",
-          "order_no": "25",
+          "order_id": "521ce1b4-12c6-48ad-9c80-54b3feeae25f",
+          "order_no": "24",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.17352
+            "lng": 121.145677,
+            "lat": 31.068125
           },
-          "arrival_s": 52817,
-          "departure_s": 71717,
+          "arrival_s": 54012,
+          "departure_s": 70212,
           "sequence": 1,
           "day": 5,
           "overflow": true
         }
       ],
-      "total_service_s": 37800.0,
-      "total_travel_s": 5117.0,
-      "total_distance_m": 31980.441026327197
+      "total_service_s": 35100.0,
+      "total_travel_s": 6312.0,
+      "total_distance_m": 41917.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
       "worker_name": "赵云",
       "day": 5,
       "assignments": [
         {
-          "order_id": "8465aba1-edbd-47e1-a96d-9dea8dde4ca8",
-          "order_no": "160",
+          "order_id": "3764d204-8209-430d-b4bf-087103889772",
+          "order_no": "25",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.38412
+            "lng": 121.220701,
+            "lat": 31.126914
           },
-          "arrival_s": 32579,
-          "departure_s": 52379,
+          "arrival_s": 33182,
+          "departure_s": 52082,
           "sequence": 0,
           "day": 5,
           "overflow": false
         },
         {
-          "order_id": "9bf4656e-86fa-4b47-828c-691f8851cd62",
-          "order_no": "14",
+          "order_id": "719e7707-dc02-4f92-9336-629aa9d560ce",
+          "order_no": "45",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.37332
+            "lng": 121.438001,
+            "lat": 31.302183
           },
-          "arrival_s": 52570,
-          "departure_s": 69670,
+          "arrival_s": 55991,
+          "departure_s": 72191,
           "sequence": 1,
           "day": 5,
           "overflow": true
         }
       ],
-      "total_service_s": 36900.0,
-      "total_travel_s": 3970.0,
-      "total_distance_m": 24816.468729542583
+      "total_service_s": 35100.0,
+      "total_travel_s": 8291.0,
+      "total_distance_m": 88539.0
     },
     {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
       "worker_name": "邱宏靖",
       "day": 5,
       "assignments": [
         {
-          "order_id": "1d6137c0-405a-4904-9081-c7abd212deb5",
-          "order_no": "131",
+          "order_id": "386254cb-daef-4a4e-b0aa-4d87abb12955",
+          "order_no": "117",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.065115
+            "lng": 121.215763,
+            "lat": 31.01011
           },
-          "arrival_s": 32724,
-          "departure_s": 52524,
+          "arrival_s": 30731,
+          "departure_s": 49631,
           "sequence": 0,
           "day": 5,
           "overflow": false
         },
         {
-          "order_id": "cc149bea-a949-4356-bc29-4251d3198995",
-          "order_no": "161",
+          "order_id": "506a70da-1c02-462a-8235-16a03c77c92c",
+          "order_no": "14",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.34416
+            "lng": 121.199642,
+            "lat": 31.002485
           },
-          "arrival_s": 57459,
-          "departure_s": 73659,
+          "arrival_s": 50361,
+          "departure_s": 67461,
           "sequence": 1,
           "day": 5,
           "overflow": true
         }
       ],
       "total_service_s": 36000.0,
-      "total_travel_s": 8859.0,
-      "total_distance_m": 55372.60359254941
+      "total_travel_s": 2661.0,
+      "total_distance_m": 12450.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 6,
       "assignments": [
         {
-          "order_id": "3d8c59e2-12f8-43ca-879c-b8a452f2a562",
-          "order_no": "24",
+          "order_id": "ff210c63-e88d-47ce-8fed-934ab9f9690c",
+          "order_no": "66",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.225045
+            "lng": 121.34901,
+            "lat": 31.355642
           },
-          "arrival_s": 30448,
-          "departure_s": 46648,
+          "arrival_s": 29754,
+          "departure_s": 45954,
           "sequence": 0,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "04fd4619-3189-44a4-9d36-54dc13e0bf3e",
-          "order_no": "6",
+          "order_id": "b1234ad5-2130-4d0c-a9b7-faba48be36f8",
+          "order_no": "103",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.32085
+            "lng": 121.402345,
+            "lat": 31.349984
           },
-          "arrival_s": 47707,
-          "departure_s": 63007,
+          "arrival_s": 46880,
+          "departure_s": 61280,
           "sequence": 1,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "7e0b6df6-74c2-408d-9024-4f9f9668f5a8",
-          "order_no": "37",
+          "order_id": "df036cee-1458-4f82-936e-93a0afe1c20b",
+          "order_no": "86",
           "site": {
-            "lng": 121.3028,
-            "lat": 31.3582
+            "lng": 121.268552,
+            "lat": 31.151142
           },
-          "arrival_s": 63420,
-          "departure_s": 77820,
+          "arrival_s": 63522,
+          "departure_s": 77922,
           "sequence": 2,
           "day": 6,
           "overflow": true
         }
       ],
-      "total_service_s": 45900.0,
-      "total_travel_s": 3120.0,
-      "total_distance_m": 31201.54402800622
+      "total_service_s": 45000.0,
+      "total_travel_s": 4122.0,
+      "total_distance_m": 50180.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 6,
       "assignments": [
         {
-          "order_id": "6f7a149f-9b26-403e-aa91-31521ea937db",
-          "order_no": "45",
+          "order_id": "ac25f757-e682-4e72-be7f-9fc4a89eba1b",
+          "order_no": "84",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.162045
+            "lng": 121.417199,
+            "lat": 31.02261
           },
-          "arrival_s": 30604,
-          "departure_s": 46804,
+          "arrival_s": 31043,
+          "departure_s": 47243,
           "sequence": 0,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "800dc680-0195-4223-a363-12ef0a29bf31",
-          "order_no": "82",
+          "order_id": "ad42346b-09a0-4136-bd72-b2173c4b773a",
+          "order_no": "143",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.35667
+            "lng": 121.248095,
+            "lat": 31.091775
           },
-          "arrival_s": 48955,
-          "departure_s": 64255,
+          "arrival_s": 49797,
+          "departure_s": 64197,
           "sequence": 1,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "e0b5c944-e961-4bfe-bd55-b67663cf0e4e",
-          "order_no": "86",
+          "order_id": "5e9323d1-1d07-4870-abd4-b13b16e3fc72",
+          "order_no": "70",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.01278
+            "lng": 121.532679,
+            "lat": 31.206182
           },
-          "arrival_s": 68056,
-          "departure_s": 82456,
+          "arrival_s": 67223,
+          "departure_s": 80723,
           "sequence": 2,
           "day": 6,
           "overflow": true
         }
       ],
-      "total_service_s": 45900.0,
-      "total_travel_s": 7756.0,
-      "total_distance_m": 77566.16802051105
+      "total_service_s": 44100.0,
+      "total_travel_s": 7823.0,
+      "total_distance_m": 96221.0
     },
     {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
       "worker_name": "杨德逍",
       "day": 6,
       "assignments": [
         {
-          "order_id": "3f2b9fc6-e779-44b3-aa49-f01e241cc4d3",
+          "order_id": "ae3fb2a2-44f6-4a48-b912-985d458f5ab7",
           "order_no": "100",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.01422
+            "lng": 121.585798,
+            "lat": 31.290952
           },
-          "arrival_s": 33450,
-          "departure_s": 48750,
+          "arrival_s": 32656,
+          "departure_s": 47956,
           "sequence": 0,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "cc5afdf3-55ce-411e-9536-22bee3671802",
-          "order_no": "16",
+          "order_id": "3648fbef-1ed3-4537-9db3-3f45093596e1",
+          "order_no": "37",
           "site": {
-            "lng": 121.3028,
-            "lat": 31.39591
+            "lng": 121.624487,
+            "lat": 31.208827
           },
-          "arrival_s": 55501,
-          "departure_s": 69901,
+          "arrival_s": 49770,
+          "departure_s": 64170,
+          "sequence": 1,
+          "day": 6,
+          "overflow": false
+        },
+        {
+          "order_id": "bf9e9cb4-ecbe-4a39-99de-36a92469b070",
+          "order_no": "146",
+          "site": {
+            "lng": 121.883013,
+            "lat": 30.972962
+          },
+          "arrival_s": 68060,
+          "departure_s": 81560,
+          "sequence": 2,
+          "day": 6,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 43200.0,
+      "total_travel_s": 9560.0,
+      "total_distance_m": 99094.0
+    },
+    {
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 6,
+      "assignments": [
+        {
+          "order_id": "e7fabc96-a7f8-4dd9-a403-03e9bfe4e500",
+          "order_no": "39",
+          "site": {
+            "lng": 121.363361,
+            "lat": 31.184029
+          },
+          "arrival_s": 30741,
+          "departure_s": 46041,
+          "sequence": 0,
+          "day": 6,
+          "overflow": false
+        },
+        {
+          "order_id": "cc7fcae4-b566-443b-925c-a443f0d944f1",
+          "order_no": "109",
+          "site": {
+            "lng": 121.396194,
+            "lat": 31.213822
+          },
+          "arrival_s": 47531,
+          "departure_s": 61931,
+          "sequence": 1,
+          "day": 6,
+          "overflow": false
+        },
+        {
+          "order_id": "6780af77-b3b3-445b-aae6-08d3c6aab7dd",
+          "order_no": "93",
+          "site": {
+            "lng": 121.473735,
+            "lat": 31.285125
+          },
+          "arrival_s": 64237,
+          "departure_s": 78637,
+          "sequence": 2,
+          "day": 6,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 44100.0,
+      "total_travel_s": 5737.0,
+      "total_distance_m": 37462.0
+    },
+    {
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
+      "worker_name": "赵云",
+      "day": 6,
+      "assignments": [
+        {
+          "order_id": "e7effd91-1355-4891-8f3b-74340686331b",
+          "order_no": "6",
+          "site": {
+            "lng": 121.542292,
+            "lat": 31.272088
+          },
+          "arrival_s": 33162,
+          "departure_s": 48462,
+          "sequence": 0,
+          "day": 6,
+          "overflow": false
+        },
+        {
+          "order_id": "5dbc5e45-bea4-4134-906d-80fc4b73dd6e",
+          "order_no": "67",
+          "site": {
+            "lng": 121.268552,
+            "lat": 31.151142
+          },
+          "arrival_s": 52102,
+          "departure_s": 66502,
           "sequence": 1,
           "day": 6,
           "overflow": true
         }
       ],
       "total_service_s": 29700.0,
-      "total_travel_s": 11401.0,
-      "total_distance_m": 71254.11839388535
+      "total_travel_s": 8002.0,
+      "total_distance_m": 75631.0
     },
     {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
+      "worker_name": "邱宏靖",
       "day": 6,
       "assignments": [
         {
-          "order_id": "41a11314-4a23-4295-b8d1-51c89aa40c65",
-          "order_no": "39",
+          "order_id": "abc82edf-5877-4bcb-b110-ebb684afbd54",
+          "order_no": "82",
           "site": {
-            "lng": 121.3028,
-            "lat": 31.443925
+            "lng": 121.506723,
+            "lat": 31.172503
           },
-          "arrival_s": 33383,
-          "departure_s": 48683,
+          "arrival_s": 32747,
+          "departure_s": 48047,
           "sequence": 0,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "cbab5372-51ae-4f56-985e-a306523c8c1a",
-          "order_no": "103",
+          "order_id": "47422c62-8b3f-4138-bbd0-fa76bd9d0da9",
+          "order_no": "16",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.427905
+            "lng": 121.443259,
+            "lat": 31.237315
           },
-          "arrival_s": 48967,
-          "departure_s": 63367,
+          "arrival_s": 50181,
+          "departure_s": 64581,
           "sequence": 1,
           "day": 6,
           "overflow": false
         },
         {
-          "order_id": "55bbafd9-7168-4c8e-8e32-a894f842db45",
-          "order_no": "146",
+          "order_id": "af03add2-a8a2-420f-a83b-2afda5162ac3",
+          "order_no": "164",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.41049
+            "lng": 121.552681,
+            "lat": 31.244804
           },
-          "arrival_s": 63676,
-          "departure_s": 77176,
+          "arrival_s": 66859,
+          "departure_s": 80359,
           "sequence": 2,
           "day": 6,
           "overflow": true
         }
       ],
       "total_service_s": 43200.0,
-      "total_travel_s": 5176.0,
-      "total_distance_m": 32346.889593446078
+      "total_travel_s": 8359.0,
+      "total_distance_m": 61519.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
-      "worker_name": "赵云",
-      "day": 6,
-      "assignments": [
-        {
-          "order_id": "29ac1d44-0fc7-425a-aead-8c1f69d5b2c3",
-          "order_no": "84",
-          "site": {
-            "lng": 121.3007,
-            "lat": 31.412695
-          },
-          "arrival_s": 32961,
-          "departure_s": 49161,
-          "sequence": 0,
-          "day": 6,
-          "overflow": false
-        },
-        {
-          "order_id": "d00e9617-b989-41a7-8fb6-1c0b18830f98",
-          "order_no": "109",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.387945
-          },
-          "arrival_s": 49599,
-          "departure_s": 63999,
-          "sequence": 1,
-          "day": 6,
-          "overflow": false
-        },
-        {
-          "order_id": "89f525a9-a858-4ef8-b35d-2f9f9e2f2fa0",
-          "order_no": "93",
-          "site": {
-            "lng": 121.30035,
-            "lat": 31.26379
-          },
-          "arrival_s": 66195,
-          "departure_s": 80595,
-          "sequence": 2,
-          "day": 6,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 45000.0,
-      "total_travel_s": 6795.0,
-      "total_distance_m": 42464.02807593106
-    },
-    {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
-      "worker_name": "邱宏靖",
-      "day": 6,
-      "assignments": [
-        {
-          "order_id": "cb137f57-2717-4f29-b113-ca495e0132ad",
-          "order_no": "66",
-          "site": {
-            "lng": 121.30035,
-            "lat": 31.07893
-          },
-          "arrival_s": 32564,
-          "departure_s": 48764,
-          "sequence": 0,
-          "day": 6,
-          "overflow": false
-        },
-        {
-          "order_id": "f153570f-879f-4b81-a74a-94ec5a9f8da1",
-          "order_no": "143",
-          "site": {
-            "lng": 121.3,
-            "lat": 31.07785
-          },
-          "arrival_s": 48784,
-          "departure_s": 63184,
-          "sequence": 1,
-          "day": 6,
-          "overflow": false
-        },
-        {
-          "order_id": "6528575a-3b20-46b3-8e8e-a77395d4662a",
-          "order_no": "67",
-          "site": {
-            "lng": 121.30035,
-            "lat": 31.01278
-          },
-          "arrival_s": 64335,
-          "departure_s": 78735,
-          "sequence": 2,
-          "day": 6,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 45000.0,
-      "total_travel_s": 4935.0,
-      "total_distance_m": 30843.39330533845
-    },
-    {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 7,
       "assignments": [
         {
-          "order_id": "7f2f0b65-ea1d-4ecc-8efa-7d8448b83c2d",
-          "order_no": "164",
+          "order_id": "42d0a0cb-deb2-454d-a27f-14a71e5b109e",
+          "order_no": "17",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.061065
+            "lng": 121.528094,
+            "lat": 31.283521
           },
-          "arrival_s": 31293,
-          "departure_s": 44793,
+          "arrival_s": 31375,
+          "departure_s": 43075,
           "sequence": 0,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "33c981a3-57c5-4a32-b4aa-b4cb873641c4",
-          "order_no": "76",
+          "order_id": "1c443947-a845-4aaa-9bfa-6de30dadf84c",
+          "order_no": "95",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.381465
+            "lng": 121.419,
+            "lat": 31.232425
           },
-          "arrival_s": 48335,
-          "departure_s": 60035,
+          "arrival_s": 44461,
+          "departure_s": 56161,
           "sequence": 1,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "77e6b3ee-89e0-4440-8c5b-3bb7e6c6daf1",
-          "order_no": "27",
+          "order_id": "9217b11e-5200-41cb-b34e-dcd23ebb8af7",
+          "order_no": "40",
           "site": {
-            "lng": 121.3014,
-            "lat": 31.439875
+            "lng": 121.47028,
+            "lat": 31.2892
           },
-          "arrival_s": 60681,
-          "departure_s": 71481,
-          "sequence": 2,
-          "day": 7,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 36000.0,
-      "total_travel_s": 6681.0,
-      "total_distance_m": 66802.4565121434
-    },
-    {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
-      "worker_name": "杜豪豪",
-      "day": 7,
-      "assignments": [
-        {
-          "order_id": "b76708dd-6ec4-4f55-8945-513c3541daaf",
-          "order_no": "70",
-          "site": {
-            "lng": 121.3,
-            "lat": 31.062685
-          },
-          "arrival_s": 31286,
-          "departure_s": 44786,
-          "sequence": 0,
-          "day": 7,
-          "overflow": false
-        },
-        {
-          "order_id": "63b0e0c0-0c2e-44bb-95ac-4b6dd7c4b44a",
-          "order_no": "4",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.267165
-          },
-          "arrival_s": 47046,
-          "departure_s": 58746,
-          "sequence": 1,
-          "day": 7,
-          "overflow": false
-        },
-        {
-          "order_id": "da8782b4-2a3c-466a-802f-63951de046f6",
-          "order_no": "5",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.329175
-          },
-          "arrival_s": 59431,
-          "departure_s": 70231,
-          "sequence": 2,
-          "day": 7,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 36000.0,
-      "total_travel_s": 5431.0,
-      "total_distance_m": 54318.94752136691
-    },
-    {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
-      "worker_name": "杨德逍",
-      "day": 7,
-      "assignments": [
-        {
-          "order_id": "0d85be95-04a4-499b-af75-bb563a80a9e8",
-          "order_no": "110",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.38457
-          },
-          "arrival_s": 32581,
-          "departure_s": 44281,
-          "sequence": 0,
-          "day": 7,
-          "overflow": false
-        },
-        {
-          "order_id": "2cac2404-eb05-4600-86a2-afafc2d58bbd",
-          "order_no": "32",
-          "site": {
-            "lng": 121.3,
-            "lat": 31.257535
-          },
-          "arrival_s": 46528,
-          "departure_s": 58228,
-          "sequence": 1,
-          "day": 7,
-          "overflow": false
-        },
-        {
-          "order_id": "9ac77d57-23cc-4a22-9bc0-fb5acbf9fad5",
-          "order_no": "136",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.246375
-          },
-          "arrival_s": 58429,
-          "departure_s": 69229,
+          "arrival_s": 57699,
+          "departure_s": 68499,
           "sequence": 2,
           "day": 7,
           "overflow": true
         }
       ],
       "total_service_s": 34200.0,
-      "total_travel_s": 6229.0,
-      "total_distance_m": 38932.027107635535
+      "total_travel_s": 5499.0,
+      "total_distance_m": 59218.0
     },
     {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
+      "worker_name": "杜豪豪",
       "day": 7,
       "assignments": [
         {
-          "order_id": "7e85f2e3-1abc-4ca7-96df-293927ea2411",
-          "order_no": "17",
+          "order_id": "8791c3ac-c1fe-4f18-a34e-685abf0ba2d7",
+          "order_no": "85",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.06372
+            "lng": 121.535773,
+            "lat": 31.119981
           },
-          "arrival_s": 32757,
-          "departure_s": 44457,
+          "arrival_s": 31297,
+          "departure_s": 44797,
           "sequence": 0,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "d426b583-4926-45c3-a5ca-f4b01ac0a73f",
-          "order_no": "106",
+          "order_id": "f512f513-3829-4c3e-bac9-3b09fd406b43",
+          "order_no": "12",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.0567
+            "lng": 121.398394,
+            "lat": 31.141745
           },
-          "arrival_s": 44583,
-          "departure_s": 55383,
+          "arrival_s": 46137,
+          "departure_s": 56937,
           "sequence": 1,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "4876481c-d154-4313-86bf-d32bd0faa063",
+          "order_id": "267d4db8-cecd-47a0-a0e4-b69418c585ce",
           "order_no": "30",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.172575
+            "lng": 121.398279,
+            "lat": 31.080282
           },
-          "arrival_s": 57432,
-          "departure_s": 68232,
+          "arrival_s": 57827,
+          "departure_s": 68627,
+          "sequence": 2,
+          "day": 7,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 35100.0,
+      "total_travel_s": 4727.0,
+      "total_distance_m": 64588.0
+    },
+    {
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
+      "worker_name": "杨德逍",
+      "day": 7,
+      "assignments": [
+        {
+          "order_id": "43b8a056-26f8-4710-b2ba-e9e08605a2a2",
+          "order_no": "110",
+          "site": {
+            "lng": 121.370772,
+            "lat": 30.997944
+          },
+          "arrival_s": 31518,
+          "departure_s": 43218,
+          "sequence": 0,
+          "day": 7,
+          "overflow": false
+        },
+        {
+          "order_id": "a0152f0f-ae2d-4ba1-80c2-61ae33dc372a",
+          "order_no": "106",
+          "site": {
+            "lng": 121.447273,
+            "lat": 30.937509
+          },
+          "arrival_s": 45340,
+          "departure_s": 56140,
+          "sequence": 1,
+          "day": 7,
+          "overflow": false
+        },
+        {
+          "order_id": "ad1f0b54-b202-457f-bb6c-42559d493d5a",
+          "order_no": "78",
+          "site": {
+            "lng": 121.505589,
+            "lat": 31.033879
+          },
+          "arrival_s": 59522,
+          "departure_s": 70322,
           "sequence": 2,
           "day": 7,
           "overflow": true
         }
       ],
       "total_service_s": 33300.0,
-      "total_travel_s": 6132.0,
-      "total_distance_m": 38326.98675108743
+      "total_travel_s": 8222.0,
+      "total_distance_m": 59160.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 7,
+      "assignments": [
+        {
+          "order_id": "5cbe5114-34f0-4a59-b41c-62ad219f9374",
+          "order_no": "32",
+          "site": {
+            "lng": 121.528573,
+            "lat": 31.195308
+          },
+          "arrival_s": 32424,
+          "departure_s": 44124,
+          "sequence": 0,
+          "day": 7,
+          "overflow": false
+        },
+        {
+          "order_id": "f523f4ef-274f-4b51-9c1c-6780bfaf6635",
+          "order_no": "136",
+          "site": {
+            "lng": 121.184863,
+            "lat": 31.032961
+          },
+          "arrival_s": 49151,
+          "departure_s": 59951,
+          "sequence": 1,
+          "day": 7,
+          "overflow": false
+        },
+        {
+          "order_id": "e0c8a077-b991-49eb-a047-7691b50d1f50",
+          "order_no": "80",
+          "site": {
+            "lng": 121.389942,
+            "lat": 31.107139
+          },
+          "arrival_s": 63509,
+          "departure_s": 74309,
+          "sequence": 2,
+          "day": 7,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 33300.0,
+      "total_travel_s": 12209.0,
+      "total_distance_m": 109695.0
+    },
+    {
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
       "worker_name": "赵云",
       "day": 7,
       "assignments": [
         {
-          "order_id": "5350a118-e241-401e-b810-6e87fd6b3abe",
-          "order_no": "99",
+          "order_id": "cd7929fb-9078-48f5-b820-e7ea4d6f3ad4",
+          "order_no": "4",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.10539
+            "lng": 121.534486,
+            "lat": 31.177703
           },
-          "arrival_s": 32222,
-          "departure_s": 44822,
+          "arrival_s": 34117,
+          "departure_s": 45817,
           "sequence": 0,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "be67261f-6bfa-4e67-8efd-b358e6c67b6c",
-          "order_no": "95",
+          "order_id": "59ebd4ee-6c33-477f-b3b0-ef9a3e046ca9",
+          "order_no": "27",
           "site": {
-            "lng": 121.3014,
-            "lat": 31.323775
+            "lng": 121.334965,
+            "lat": 31.153235
           },
-          "arrival_s": 48684,
-          "departure_s": 60384,
+          "arrival_s": 49025,
+          "departure_s": 59825,
           "sequence": 1,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "4b97950b-d8ec-4c02-91b3-e03fa9e95a10",
-          "order_no": "65",
+          "order_id": "a76c571b-de13-4b4f-a7f0-928ef6fd786d",
+          "order_no": "5",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.065835
+            "lng": 121.318322,
+            "lat": 31.249798
           },
-          "arrival_s": 64946,
-          "departure_s": 75746,
+          "arrival_s": 61926,
+          "departure_s": 72726,
           "sequence": 2,
           "day": 7,
           "overflow": true
         }
       ],
-      "total_service_s": 35100.0,
-      "total_travel_s": 11846.0,
-      "total_distance_m": 74039.69325703921
+      "total_service_s": 33300.0,
+      "total_travel_s": 10626.0,
+      "total_distance_m": 102934.0
     },
     {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
       "worker_name": "邱宏靖",
       "day": 7,
       "assignments": [
         {
-          "order_id": "08451204-31d1-45f3-9d49-aa8c6ac1f3f0",
-          "order_no": "85",
+          "order_id": "c22a4872-2d2d-4755-ab14-1aa8029f0b9b",
+          "order_no": "99",
           "site": {
-            "lng": 121.30315,
-            "lat": 31.051885
+            "lng": 121.231319,
+            "lat": 31.018286
           },
-          "arrival_s": 32892,
-          "departure_s": 46392,
+          "arrival_s": 30595,
+          "departure_s": 43195,
           "sequence": 0,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "7282ddbf-1ee9-4109-ad6d-f1b5f7609ad3",
-          "order_no": "12",
+          "order_id": "997bc847-9972-4eb8-aa1a-aaeb6264c7dd",
+          "order_no": "76",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.05805
+            "lng": 121.246025,
+            "lat": 31.101595
           },
-          "arrival_s": 46503,
-          "departure_s": 57303,
+          "arrival_s": 45784,
+          "departure_s": 57484,
           "sequence": 1,
           "day": 7,
           "overflow": false
         },
         {
-          "order_id": "a3488e67-a31a-4749-b744-817aebcca660",
-          "order_no": "40",
+          "order_id": "b7eebd24-bb10-4ce8-b5b5-9dbfb0805ffe",
+          "order_no": "65",
           "site": {
-            "lng": 121.30105,
-            "lat": 31.092655
+            "lng": 121.325795,
+            "lat": 31.133542
           },
-          "arrival_s": 57915,
-          "departure_s": 68715,
+          "arrival_s": 59934,
+          "departure_s": 70734,
           "sequence": 2,
           "day": 7,
           "overflow": true
         }
       ],
       "total_service_s": 35100.0,
-      "total_travel_s": 4815.0,
-      "total_distance_m": 30092.567390067532
+      "total_travel_s": 6834.0,
+      "total_distance_m": 30794.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 8,
       "assignments": [
         {
-          "order_id": "c37e4aca-120e-48bc-a6b0-7e086e878af7",
-          "order_no": "78",
+          "order_id": "bbc2ef2a-e69d-4be7-ba01-652f3d42e17b",
+          "order_no": "142",
           "site": {
-            "lng": 121.30035,
-            "lat": 31.427635
+            "lng": 121.583961,
+            "lat": 31.12284
           },
-          "arrival_s": 31532,
-          "departure_s": 42332,
+          "arrival_s": 32120,
+          "departure_s": 42020,
           "sequence": 0,
           "day": 8,
           "overflow": false
         },
         {
-          "order_id": "c0e35083-dd2c-4ebe-9923-537d32332d58",
-          "order_no": "42",
+          "order_id": "c657bf33-d3f2-4c56-880a-d5cba90b6112",
+          "order_no": "47",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.42804
+            "lng": 121.070505,
+            "lat": 30.929383
           },
-          "arrival_s": 42352,
-          "departure_s": 52252,
+          "arrival_s": 44920,
+          "departure_s": 54820,
           "sequence": 1,
           "day": 8,
           "overflow": false
         },
         {
-          "order_id": "9151ea66-da37-4dda-aa44-abe3390a155e",
-          "order_no": "129",
+          "order_id": "b901fb72-315e-4734-8681-0dbff269f63e",
+          "order_no": "73",
           "site": {
-            "lng": 121.3,
-            "lat": 31.202185
+            "lng": 121.361496,
+            "lat": 31.123889
           },
-          "arrival_s": 54749,
-          "departure_s": 63749,
+          "arrival_s": 56902,
+          "departure_s": 65902,
           "sequence": 2,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "2711d3b3-65c6-4a5e-8121-94b000fe3c02",
-          "order_no": "11",
-          "site": {
-            "lng": 121.30175,
-            "lat": 31.448605
-          },
-          "arrival_s": 66473,
-          "departure_s": 73673,
-          "sequence": 3,
           "day": 8,
           "overflow": true
         }
       ],
-      "total_service_s": 36900.0,
-      "total_travel_s": 7973.0,
-      "total_distance_m": 79733.18423105434
+      "total_service_s": 28800.0,
+      "total_travel_s": 8302.0,
+      "total_distance_m": 164585.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 8,
       "assignments": [
         {
-          "order_id": "eb38e521-489b-4018-9f5f-30af3b1a88c1",
-          "order_no": "80",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.222255
-          },
-          "arrival_s": 30443,
-          "departure_s": 41243,
-          "sequence": 0,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "9f0b2db4-2cc8-4159-ac42-2a7601cf7a8c",
-          "order_no": "47",
-          "site": {
-            "lng": 121.3021,
-            "lat": 31.37161
-          },
-          "arrival_s": 42894,
-          "departure_s": 52794,
-          "sequence": 1,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "0b49513c-4324-495a-8210-0e280fa07f68",
-          "order_no": "121",
-          "site": {
-            "lng": 121.3,
-            "lat": 31.218655
-          },
-          "arrival_s": 54485,
-          "departure_s": 63485,
-          "sequence": 2,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "e91467b4-63c8-488f-89fe-17bb44ea8430",
-          "order_no": "20",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.449955
-          },
-          "arrival_s": 66042,
-          "departure_s": 74142,
-          "sequence": 3,
-          "day": 8,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 37800.0,
-      "total_travel_s": 7542.0,
-      "total_distance_m": 75413.84687656806
-    },
-    {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
-      "worker_name": "杨德逍",
-      "day": 8,
-      "assignments": [
-        {
-          "order_id": "e89ff1dc-401d-4793-8a74-b7e1cb2aff29",
-          "order_no": "152",
-          "site": {
-            "lng": 121.3028,
-            "lat": 31.171585
-          },
-          "arrival_s": 31605,
-          "departure_s": 41505,
-          "sequence": 0,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "58800679-d67a-41d7-af92-4f773848831d",
-          "order_no": "57",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.39681
-          },
-          "arrival_s": 45488,
-          "departure_s": 55388,
-          "sequence": 1,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "3d70f4c1-6ebc-407f-b10e-9bdf9d64d529",
-          "order_no": "7",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.43767
-          },
-          "arrival_s": 56111,
-          "departure_s": 65111,
-          "sequence": 2,
-          "day": 8,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 28800.0,
-      "total_travel_s": 7511.0,
-      "total_distance_m": 46943.17379238573
-    },
-    {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
-      "day": 8,
-      "assignments": [
-        {
-          "order_id": "e6dd5d64-b0cb-4c11-84b0-b03d23f83d91",
-          "order_no": "165",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.135855
-          },
-          "arrival_s": 31900,
-          "departure_s": 41800,
-          "sequence": 0,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "d1f83bde-a6af-4c47-9830-bf5c670078fe",
-          "order_no": "71",
-          "site": {
-            "lng": 121.3028,
-            "lat": 31.37314
-          },
-          "arrival_s": 45997,
-          "departure_s": 55897,
-          "sequence": 1,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "662f796d-0250-4d69-b137-2b4cb0d83edc",
-          "order_no": "73",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.445905
-          },
-          "arrival_s": 57184,
-          "departure_s": 66184,
-          "sequence": 2,
-          "day": 8,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 28800.0,
-      "total_travel_s": 8584.0,
-      "total_distance_m": 53651.937525328154
-    },
-    {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
-      "worker_name": "赵云",
-      "day": 8,
-      "assignments": [
-        {
-          "order_id": "55c21f3f-5d80-46a2-be1d-3f67af79ed13",
-          "order_no": "142",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.375345
-          },
-          "arrival_s": 32454,
-          "departure_s": 42354,
-          "sequence": 0,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "e5a67fa5-f35b-4644-9725-c5e5847f14b5",
-          "order_no": "41",
-          "site": {
-            "lng": 121.3028,
-            "lat": 31.37233
-          },
-          "arrival_s": 42408,
-          "departure_s": 52308,
-          "sequence": 1,
-          "day": 8,
-          "overflow": false
-        },
-        {
-          "order_id": "db67daf7-65d9-4670-adda-8e2044fff18f",
-          "order_no": "28",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.010935
-          },
-          "arrival_s": 58700,
-          "departure_s": 67700,
-          "sequence": 2,
-          "day": 8,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 28800.0,
-      "total_travel_s": 10100.0,
-      "total_distance_m": 63122.53332236679
-    },
-    {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
-      "worker_name": "邱宏靖",
-      "day": 8,
-      "assignments": [
-        {
-          "order_id": "4746bccc-74b6-4e90-a7d4-54dc3f5952a1",
+          "order_id": "f31d0a33-9586-4d6d-b72c-db0a2a0fbf11",
           "order_no": "113",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.03222
+            "lng": 121.097088,
+            "lat": 31.165373
           },
-          "arrival_s": 33188,
-          "departure_s": 43088,
+          "arrival_s": 30717,
+          "departure_s": 40617,
           "sequence": 0,
           "day": 8,
           "overflow": false
         },
         {
-          "order_id": "ebd02287-1878-4974-ad79-2d172c011336",
-          "order_no": "38",
+          "order_id": "26277106-799b-4624-b60f-72629948051c",
+          "order_no": "42",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.035865
+            "lng": 121.235544,
+            "lat": 31.058424
           },
-          "arrival_s": 43158,
-          "departure_s": 53058,
+          "arrival_s": 42988,
+          "departure_s": 52888,
           "sequence": 1,
           "day": 8,
           "overflow": false
         },
         {
-          "order_id": "b4c4d11a-efa9-4669-af72-c7c14816645b",
-          "order_no": "114",
+          "order_id": "c5fb6fd6-ecca-4b06-9009-368361ca1763",
+          "order_no": "129",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.15507
+            "lng": 121.153921,
+            "lat": 31.094453
           },
-          "arrival_s": 55166,
-          "departure_s": 64166,
+          "arrival_s": 54216,
+          "departure_s": 63216,
           "sequence": 2,
           "day": 8,
           "overflow": false
         },
         {
-          "order_id": "a1b6e613-d6f3-4474-b72d-da0769ecc5ef",
-          "order_no": "59",
+          "order_id": "b7eb9a26-4e4d-43e7-8a06-534ea435ddff",
+          "order_no": "83",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.41805
+            "lng": 121.366762,
+            "lat": 31.180503
           },
-          "arrival_s": 68817,
-          "departure_s": 76017,
+          "arrival_s": 65288,
+          "departure_s": 72488,
           "sequence": 3,
           "day": 8,
           "overflow": true
         }
       ],
       "total_service_s": 36000.0,
-      "total_travel_s": 11217.0,
-      "total_distance_m": 70109.64620423947
+      "total_travel_s": 7688.0,
+      "total_distance_m": 99963.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
+      "worker_name": "杨德逍",
+      "day": 8,
+      "assignments": [
+        {
+          "order_id": "0ac7c54f-0d6e-4221-824e-739b19d96fbf",
+          "order_no": "152",
+          "site": {
+            "lng": 121.559932,
+            "lat": 31.245704
+          },
+          "arrival_s": 31918,
+          "departure_s": 41818,
+          "sequence": 0,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "6a0d32ca-330a-4e44-85a3-abf2ab886508",
+          "order_no": "114",
+          "site": {
+            "lng": 121.42147,
+            "lat": 31.181051
+          },
+          "arrival_s": 44327,
+          "departure_s": 53327,
+          "sequence": 1,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "d548e82a-bc5d-42c6-8d67-d0a6c82aff11",
+          "order_no": "28",
+          "site": {
+            "lng": 121.478418,
+            "lat": 31.23339
+          },
+          "arrival_s": 55033,
+          "departure_s": 64033,
+          "sequence": 2,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "27d766a7-f7c4-4e14-8d9b-5f28f14f22da",
+          "order_no": "98",
+          "site": {
+            "lng": 121.3986,
+            "lat": 31.152051
+          },
+          "arrival_s": 66428,
+          "departure_s": 73628,
+          "sequence": 3,
+          "day": 8,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 35100.0,
+      "total_travel_s": 9728.0,
+      "total_distance_m": 80670.0
+    },
+    {
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 8,
+      "assignments": [
+        {
+          "order_id": "b712b24e-48b2-4c82-9e4b-8ac1ce173abf",
+          "order_no": "165",
+          "site": {
+            "lng": 121.439964,
+            "lat": 31.140389
+          },
+          "arrival_s": 31722,
+          "departure_s": 41622,
+          "sequence": 0,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "c946c2cf-ed44-45a8-88d5-891903740183",
+          "order_no": "71",
+          "site": {
+            "lng": 121.51653,
+            "lat": 31.027057
+          },
+          "arrival_s": 44320,
+          "departure_s": 54220,
+          "sequence": 1,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "6243b0ea-00a1-4761-af97-ad7e586257f2",
+          "order_no": "20",
+          "site": {
+            "lng": 121.509556,
+            "lat": 31.123673
+          },
+          "arrival_s": 56318,
+          "departure_s": 64418,
+          "sequence": 2,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "e00423f3-7192-4a72-b5a0-1c90bfd19b65",
+          "order_no": "59",
+          "site": {
+            "lng": 121.41745,
+            "lat": 31.099402
+          },
+          "arrival_s": 66252,
+          "departure_s": 73452,
+          "sequence": 3,
+          "day": 8,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 35100.0,
+      "total_travel_s": 9552.0,
+      "total_distance_m": 64669.0
+    },
+    {
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
+      "worker_name": "赵云",
+      "day": 8,
+      "assignments": [
+        {
+          "order_id": "4a4bddea-db3e-4d76-a74b-41b8117e3e52",
+          "order_no": "38",
+          "site": {
+            "lng": 121.533955,
+            "lat": 31.328888
+          },
+          "arrival_s": 33216,
+          "departure_s": 43116,
+          "sequence": 0,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "1c133fdc-dc31-4dd9-8585-8ce2be0256be",
+          "order_no": "121",
+          "site": {
+            "lng": 121.290295,
+            "lat": 31.120383
+          },
+          "arrival_s": 48074,
+          "departure_s": 57074,
+          "sequence": 1,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "828d3ac2-8b03-486a-8288-24ee575a9624",
+          "order_no": "11",
+          "site": {
+            "lng": 121.256253,
+            "lat": 31.11363
+          },
+          "arrival_s": 57968,
+          "departure_s": 65168,
+          "sequence": 2,
+          "day": 8,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 26100.0,
+      "total_travel_s": 10268.0,
+      "total_distance_m": 87233.0
+    },
+    {
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
+      "worker_name": "邱宏靖",
+      "day": 8,
+      "assignments": [
+        {
+          "order_id": "6613d308-5d2b-4dee-aa0e-6ab9de42ada2",
+          "order_no": "41",
+          "site": {
+            "lng": 121.359257,
+            "lat": 31.158562
+          },
+          "arrival_s": 31618,
+          "departure_s": 41518,
+          "sequence": 0,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "d4159c89-108b-4bb7-a18e-26e86f8cfce3",
+          "order_no": "57",
+          "site": {
+            "lng": 121.438758,
+            "lat": 31.245564
+          },
+          "arrival_s": 43756,
+          "departure_s": 53656,
+          "sequence": 1,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "c6529de5-ac9d-4adc-8545-86a46ae50e97",
+          "order_no": "7",
+          "site": {
+            "lng": 121.483755,
+            "lat": 31.215822
+          },
+          "arrival_s": 55674,
+          "departure_s": 64674,
+          "sequence": 2,
+          "day": 8,
+          "overflow": false
+        },
+        {
+          "order_id": "37664ce2-d4e7-49d8-a698-a77158c88664",
+          "order_no": "97",
+          "site": {
+            "lng": 121.561597,
+            "lat": 31.176804
+          },
+          "arrival_s": 66740,
+          "departure_s": 73940,
+          "sequence": 3,
+          "day": 8,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 36000.0,
+      "total_travel_s": 9140.0,
+      "total_distance_m": 59926.0
+    },
+    {
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 9,
       "assignments": [
         {
-          "order_id": "4b3f3086-c4e5-4e2a-8a11-d2762de9c26d",
-          "order_no": "83",
-          "site": {
-            "lng": 121.30175,
-            "lat": 31.06786
-          },
-          "arrival_s": 31232,
-          "departure_s": 38432,
-          "sequence": 0,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "878735db-82b4-4046-9171-effd77d890b0",
-          "order_no": "132",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.02691
-          },
-          "arrival_s": 38885,
-          "departure_s": 44285,
-          "sequence": 1,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "32a1f3dd-10fc-47d5-88dd-d8163899237f",
-          "order_no": "55",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.108585
-          },
-          "arrival_s": 45188,
-          "departure_s": 50588,
-          "sequence": 2,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "c20a3eb6-ed53-444b-a69d-10799942f597",
-          "order_no": "115",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.085185
-          },
-          "arrival_s": 50847,
-          "departure_s": 55347,
-          "sequence": 3,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "98de5981-51f6-49c5-a754-24c0341908de",
-          "order_no": "21",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.40248
-          },
-          "arrival_s": 58854,
-          "departure_s": 63354,
-          "sequence": 4,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "cd5096d2-fd01-4a27-a9bc-0b0334154d32",
-          "order_no": "35",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.447075
-          },
-          "arrival_s": 63847,
-          "departure_s": 68347,
-          "sequence": 5,
-          "day": 9,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 31500.0,
-      "total_travel_s": 8047.0,
-      "total_distance_m": 80473.623240269
-    },
-    {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
-      "worker_name": "杜豪豪",
-      "day": 9,
-      "assignments": [
-        {
-          "order_id": "a93c9aa7-ed57-44bf-9014-ead874590f6c",
-          "order_no": "97",
-          "site": {
-            "lng": 121.3021,
-            "lat": 31.119205
-          },
-          "arrival_s": 30846,
-          "departure_s": 38046,
-          "sequence": 0,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "590ace1d-9307-4db4-b1b5-898b413777e8",
-          "order_no": "149",
-          "site": {
-            "lng": 121.30035,
-            "lat": 31.128205
-          },
-          "arrival_s": 38147,
-          "departure_s": 43547,
-          "sequence": 1,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "7447fb7b-9d66-43f7-b02c-afc7bc655e7e",
-          "order_no": "52",
-          "site": {
-            "lng": 121.30035,
-            "lat": 31.132615
-          },
-          "arrival_s": 43596,
-          "departure_s": 48996,
-          "sequence": 2,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "08c79962-e395-4df7-a31a-3725e413c528",
-          "order_no": "56",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.114435
-          },
-          "arrival_s": 49198,
-          "departure_s": 54598,
-          "sequence": 3,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "e1cc54ef-b48e-4427-8d47-743a18158c9d",
-          "order_no": "130",
-          "site": {
-            "lng": 121.30175,
-            "lat": 31.07344
-          },
-          "arrival_s": 55051,
-          "departure_s": 59551,
-          "sequence": 4,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "df8ea33c-75cf-40b3-9644-15e5101ceb1f",
-          "order_no": "58",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.208485
-          },
-          "arrival_s": 61044,
-          "departure_s": 65544,
-          "sequence": 5,
-          "day": 9,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 32400.0,
-      "total_travel_s": 4344.0,
-      "total_distance_m": 43433.51149685428
-    },
-    {
-      "worker_id": "5f1be052-594d-46be-862b-92abfdd9592a",
-      "worker_name": "杨德逍",
-      "day": 9,
-      "assignments": [
-        {
-          "order_id": "b87fab26-380e-49ab-b379-dd75e7dd272a",
-          "order_no": "105",
-          "site": {
-            "lng": 121.3007,
-            "lat": 31.05166
-          },
-          "arrival_s": 32919,
-          "departure_s": 38319,
-          "sequence": 0,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "50ef2e45-fa59-4212-91fc-2b98bce35ded",
+          "order_id": "4eba3fa4-2ee3-4aaa-aae9-d31631ccfde5",
           "order_no": "127",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.0306
+            "lng": 121.449251,
+            "lat": 31.327532
           },
-          "arrival_s": 38692,
-          "departure_s": 44092,
+          "arrival_s": 30377,
+          "departure_s": 35777,
+          "sequence": 0,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "9822ad94-a535-4a4e-aec3-6222d6d1dd97",
+          "order_no": "149",
+          "site": {
+            "lng": 121.59418,
+            "lat": 31.262803
+          },
+          "arrival_s": 37359,
+          "departure_s": 42759,
           "sequence": 1,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "45074b9c-38b1-4f91-ab06-58f6a0e3eb48",
-          "order_no": "50",
+          "order_id": "e4dd60cc-baf2-498d-bcc0-0e3cfa91e58d",
+          "order_no": "55",
           "site": {
-            "lng": 121.3,
-            "lat": 31.03537
+            "lng": 121.391121,
+            "lat": 31.215913
           },
-          "arrival_s": 44184,
-          "departure_s": 49584,
+          "arrival_s": 44776,
+          "departure_s": 50176,
           "sequence": 2,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "eccb8ba8-fd18-4ad8-b83e-0b8bfccf0ed5",
-          "order_no": "61",
+          "order_id": "d685fade-9444-4b0f-a89d-67e1b2ecdd7f",
+          "order_no": "115",
           "site": {
-            "lng": 121.3014,
-            "lat": 31.07371
+            "lng": 121.496254,
+            "lat": 31.163333
           },
-          "arrival_s": 50262,
-          "departure_s": 55662,
+          "arrival_s": 51727,
+          "departure_s": 56227,
           "sequence": 3,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "786e4b85-f9f0-4e18-80e6-495d0102330a",
+          "order_id": "5b9e3954-ff49-4c4e-b771-c8e000355b2e",
           "order_no": "23",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.11331
+            "lng": 121.147001,
+            "lat": 31.067692
           },
-          "arrival_s": 56362,
-          "departure_s": 60862,
+          "arrival_s": 59209,
+          "departure_s": 63709,
           "sequence": 4,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "7f07aee6-31e8-4257-ba6d-ef22f1544c2c",
-          "order_no": "75",
+          "order_id": "f8e518ab-d853-440f-8169-1183f9093190",
+          "order_no": "35",
           "site": {
-            "lng": 121.3021,
-            "lat": 31.04662
+            "lng": 121.236677,
+            "lat": 31.043307
           },
-          "arrival_s": 62042,
-          "departure_s": 66542,
-          "sequence": 5,
-          "day": 9,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 30600.0,
-      "total_travel_s": 7142.0,
-      "total_distance_m": 44642.577803186636
-    },
-    {
-      "worker_id": "4e28f573-c31d-4f5f-bfdc-4ec54c3a4ab1",
-      "worker_name": "王意江",
-      "day": 9,
-      "assignments": [
-        {
-          "order_id": "2f0e6d18-b0f6-4a25-9018-becf99141beb",
-          "order_no": "126",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.301995
-          },
-          "arrival_s": 31717,
-          "departure_s": 37117,
-          "sequence": 0,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "1e4a378b-6572-4274-9fd6-0f26ccee92a2",
-          "order_no": "144",
-          "site": {
-            "lng": 121.3007,
-            "lat": 31.23238
-          },
-          "arrival_s": 38348,
-          "departure_s": 43748,
-          "sequence": 1,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "e2768b50-21de-4508-9d70-eda07bc61d6e",
-          "order_no": "54",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.261
-          },
-          "arrival_s": 44255,
-          "departure_s": 49655,
-          "sequence": 2,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "786ee528-050e-4c67-93c7-3cc208753139",
-          "order_no": "92",
-          "site": {
-            "lng": 121.30175,
-            "lat": 31.35883
-          },
-          "arrival_s": 51385,
-          "departure_s": 56785,
-          "sequence": 3,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "9ee21104-7eb3-4600-94a9-b2158bb375b5",
-          "order_no": "163",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.41571
-          },
-          "arrival_s": 57791,
-          "departure_s": 62291,
-          "sequence": 4,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "27c96b79-6ae9-4948-9cbc-76878aad2e74",
-          "order_no": "29",
-          "site": {
-            "lng": 121.30315,
-            "lat": 31.404055
-          },
-          "arrival_s": 62500,
-          "departure_s": 67000,
-          "sequence": 5,
-          "day": 9,
-          "overflow": true
-        }
-      ],
-      "total_service_s": 30600.0,
-      "total_travel_s": 7600.0,
-      "total_distance_m": 47498.620491428475
-    },
-    {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
-      "worker_name": "赵云",
-      "day": 9,
-      "assignments": [
-        {
-          "order_id": "c464557d-2526-4e3f-ae3b-f7b0eab3fdb5",
-          "order_no": "10",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.37584
-          },
-          "arrival_s": 32472,
-          "departure_s": 37872,
-          "sequence": 0,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "024ccbd3-1458-499d-8334-c65934c93371",
-          "order_no": "2",
-          "site": {
-            "lng": 121.30035,
-            "lat": 31.441765
-          },
-          "arrival_s": 39038,
-          "departure_s": 44438,
-          "sequence": 1,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "8d5879db-28ca-4bb8-b3b6-c931c5c966f3",
-          "order_no": "72",
-          "site": {
-            "lng": 121.3028,
-            "lat": 31.307305
-          },
-          "arrival_s": 46816,
-          "departure_s": 52216,
-          "sequence": 2,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "b9aca5cf-71fe-46d8-9932-5c2d0a86747f",
-          "order_no": "128",
-          "site": {
-            "lng": 121.30315,
-            "lat": 31.23328
-          },
-          "arrival_s": 53525,
-          "departure_s": 58025,
-          "sequence": 3,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "e235c30b-bb9d-4443-8dc3-b9cf56506c44",
-          "order_no": "51",
-          "site": {
-            "lng": 121.3014,
-            "lat": 31.30231
-          },
-          "arrival_s": 59246,
-          "departure_s": 63746,
-          "sequence": 4,
-          "day": 9,
-          "overflow": false
-        },
-        {
-          "order_id": "b98bc8bf-fbca-4d45-bb9e-358a4b0a78c1",
-          "order_no": "81",
-          "site": {
-            "lng": 121.30245,
-            "lat": 31.28557
-          },
-          "arrival_s": 64043,
-          "departure_s": 68543,
+          "arrival_s": 65281,
+          "departure_s": 69781,
           "sequence": 5,
           "day": 9,
           "overflow": true
         }
       ],
       "total_service_s": 29700.0,
-      "total_travel_s": 10043.0,
-      "total_distance_m": 62769.821525539446
+      "total_travel_s": 11281.0,
+      "total_distance_m": 163909.0
     },
     {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
-      "worker_name": "邱宏靖",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
+      "worker_name": "杜豪豪",
       "day": 9,
       "assignments": [
         {
-          "order_id": "3202abec-ece5-44ab-9a6d-a2ee506b8879",
-          "order_no": "98",
+          "order_id": "c7e7aef5-b8f4-4806-8e56-910922998a28",
+          "order_no": "105",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.195975
+            "lng": 121.635387,
+            "lat": 31.197951
           },
-          "arrival_s": 31505,
-          "departure_s": 38705,
+          "arrival_s": 31572,
+          "departure_s": 36972,
           "sequence": 0,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "200243fd-ecc8-4581-be14-6da115a202a1",
-          "order_no": "34",
+          "order_id": "6ac45165-6d4e-4353-bff1-27a3c725586b",
+          "order_no": "2",
           "site": {
-            "lng": 121.30245,
-            "lat": 31.43938
+            "lng": 121.739743,
+            "lat": 31.060034
           },
-          "arrival_s": 43010,
-          "departure_s": 48410,
+          "arrival_s": 39186,
+          "departure_s": 44586,
           "sequence": 1,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "214daa40-cb33-4bed-bd25-0d04409cf68e",
-          "order_no": "8",
+          "order_id": "219f7065-4b2a-4ba8-bba7-f81509e6256f",
+          "order_no": "61",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.44946
+            "lng": 121.702657,
+            "lat": 31.113076
           },
-          "arrival_s": 48589,
-          "departure_s": 53989,
+          "arrival_s": 45582,
+          "departure_s": 50982,
           "sequence": 2,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "9e8a0f8b-c456-4cbe-b186-cea0b2a92676",
-          "order_no": "151",
+          "order_id": "49532348-0868-4ed2-8ac4-04d95092bac5",
+          "order_no": "128",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.294435
+            "lng": 121.53895,
+            "lat": 31.215565
           },
-          "arrival_s": 56731,
-          "departure_s": 61231,
+          "arrival_s": 53039,
+          "departure_s": 57539,
           "sequence": 3,
           "day": 9,
           "overflow": false
         },
         {
-          "order_id": "803b4ee4-b005-418f-81e5-cc68870c228f",
+          "order_id": "fb8b27b3-8829-4736-a7db-b43ef51980a0",
+          "order_no": "29",
+          "site": {
+            "lng": 121.566954,
+            "lat": 31.176364
+          },
+          "arrival_s": 58635,
+          "departure_s": 63135,
+          "sequence": 4,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "68ebec5b-51f2-4f38-816e-bda454d88681",
+          "order_no": "81",
+          "site": {
+            "lng": 121.484847,
+            "lat": 31.210463
+          },
+          "arrival_s": 64519,
+          "departure_s": 69019,
+          "sequence": 5,
+          "day": 9,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 29700.0,
+      "total_travel_s": 10519.0,
+      "total_distance_m": 128846.0
+    },
+    {
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
+      "worker_name": "杨德逍",
+      "day": 9,
+      "assignments": [
+        {
+          "order_id": "5abb2be3-f1eb-4145-bb8b-c1e24036922a",
+          "order_no": "10",
+          "site": {
+            "lng": 121.317825,
+            "lat": 31.146569
+          },
+          "arrival_s": 30147,
+          "departure_s": 35547,
+          "sequence": 0,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "d4818923-7d03-4682-ba25-45d60863ee78",
+          "order_no": "34",
+          "site": {
+            "lng": 121.438758,
+            "lat": 31.245564
+          },
+          "arrival_s": 38179,
+          "departure_s": 43579,
+          "sequence": 1,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "c226454f-0021-48a2-8f86-2e5398c1a877",
+          "order_no": "72",
+          "site": {
+            "lng": 121.351719,
+            "lat": 31.100864
+          },
+          "arrival_s": 47089,
+          "departure_s": 52489,
+          "sequence": 2,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "56e313ad-89a4-4fc7-bf49-4f64ee542a3b",
+          "order_no": "163",
+          "site": {
+            "lng": 121.484656,
+            "lat": 31.267296
+          },
+          "arrival_s": 55900,
+          "departure_s": 60400,
+          "sequence": 3,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "b53c8952-d440-404b-8f23-f4115100c52c",
           "order_no": "64",
           "site": {
-            "lng": 121.3007,
-            "lat": 31.31221
+            "lng": 121.476976,
+            "lat": 31.252503
           },
-          "arrival_s": 61546,
-          "departure_s": 66046,
+          "arrival_s": 61066,
+          "departure_s": 65566,
           "sequence": 4,
           "day": 9,
           "overflow": true
         }
       ],
-      "total_service_s": 27000.0,
-      "total_travel_s": 10246.0,
-      "total_distance_m": 64033.98584874689
+      "total_service_s": 25200.0,
+      "total_travel_s": 11566.0,
+      "total_distance_m": 83388.0
     },
     {
-      "worker_id": "0cb7d3bd-c520-4f17-8ff1-0d2305bb6eed",
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 9,
+      "assignments": [
+        {
+          "order_id": "2ae01ed3-6a31-4d5f-a227-5f6736aa6015",
+          "order_no": "132",
+          "site": {
+            "lng": 121.448985,
+            "lat": 31.112173
+          },
+          "arrival_s": 31645,
+          "departure_s": 37045,
+          "sequence": 0,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "b184f1db-66b0-4c5b-9146-1fd734bfc968",
+          "order_no": "52",
+          "site": {
+            "lng": 121.381328,
+            "lat": 31.138301
+          },
+          "arrival_s": 38560,
+          "departure_s": 43960,
+          "sequence": 1,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "06663ca0-b6ef-422b-b423-4b55f9d23a3e",
+          "order_no": "56",
+          "site": {
+            "lng": 121.245499,
+            "lat": 30.999852
+          },
+          "arrival_s": 46722,
+          "departure_s": 52122,
+          "sequence": 2,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "5db4a4f1-8c88-4a7b-bca1-00b8e4fc9b21",
+          "order_no": "21",
+          "site": {
+            "lng": 121.445113,
+            "lat": 31.212058
+          },
+          "arrival_s": 56149,
+          "departure_s": 60649,
+          "sequence": 3,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "74064c64-dc32-4aeb-b7a7-4cf30f9f12a7",
+          "order_no": "75",
+          "site": {
+            "lng": 121.385791,
+            "lat": 31.131564
+          },
+          "arrival_s": 62699,
+          "departure_s": 67199,
+          "sequence": 4,
+          "day": 9,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 25200.0,
+      "total_travel_s": 13199.0,
+      "total_distance_m": 111000.0
+    },
+    {
+      "worker_id": "2c63727d-17fd-451c-93a2-6b422ad9ff31",
+      "worker_name": "赵云",
+      "day": 9,
+      "assignments": [
+        {
+          "order_id": "8851af8c-b83f-4bc9-b3fa-8e4d05244630",
+          "order_no": "144",
+          "site": {
+            "lng": 121.44197,
+            "lat": 31.315471
+          },
+          "arrival_s": 31862,
+          "departure_s": 37262,
+          "sequence": 0,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "03277665-5820-4c57-a017-7a894745580d",
+          "order_no": "50",
+          "site": {
+            "lng": 121.472316,
+            "lat": 31.271486
+          },
+          "arrival_s": 38704,
+          "departure_s": 44104,
+          "sequence": 1,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "fa8e37ec-ddf0-4885-82ac-e40482070184",
+          "order_no": "8",
+          "site": {
+            "lng": 121.389459,
+            "lat": 31.125648
+          },
+          "arrival_s": 47083,
+          "departure_s": 52483,
+          "sequence": 2,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "d8b0b7e0-deb0-416a-8ff7-d20b42cb6ed7",
+          "order_no": "130",
+          "site": {
+            "lng": 121.430912,
+            "lat": 31.350873
+          },
+          "arrival_s": 55617,
+          "departure_s": 60117,
+          "sequence": 3,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "55f3ef3b-dc1d-486d-afbc-7cdac23d955b",
+          "order_no": "58",
+          "site": {
+            "lng": 121.3014,
+            "lat": 31.208485
+          },
+          "arrival_s": 62675,
+          "departure_s": 67175,
+          "sequence": 4,
+          "day": 9,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 25200.0,
+      "total_travel_s": 13175.0,
+      "total_distance_m": 118821.0
+    },
+    {
+      "worker_id": "fad53501-2bd6-4695-bf96-1947c4c3cb78",
+      "worker_name": "邱宏靖",
+      "day": 9,
+      "assignments": [
+        {
+          "order_id": "10c8220a-8658-49b9-a00b-25b9574b07e1",
+          "order_no": "126",
+          "site": {
+            "lng": 121.502475,
+            "lat": 31.020519
+          },
+          "arrival_s": 32078,
+          "departure_s": 37478,
+          "sequence": 0,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "4af71a56-dd0a-4b4a-8e1a-53fc50b00406",
+          "order_no": "54",
+          "site": {
+            "lng": 121.510322,
+            "lat": 31.275518
+          },
+          "arrival_s": 41766,
+          "departure_s": 47166,
+          "sequence": 1,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "d004ac00-9913-4ef9-a413-02369aa45c54",
+          "order_no": "92",
+          "site": {
+            "lng": 121.529661,
+            "lat": 31.255309
+          },
+          "arrival_s": 48182,
+          "departure_s": 53582,
+          "sequence": 2,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "a37b59fa-8abb-4228-a006-7063ccdba8ed",
+          "order_no": "151",
+          "site": {
+            "lng": 121.525435,
+            "lat": 31.194696
+          },
+          "arrival_s": 55105,
+          "departure_s": 59605,
+          "sequence": 3,
+          "day": 9,
+          "overflow": false
+        },
+        {
+          "order_id": "20259596-2b78-48b4-92d8-9e4f5c1ae914",
+          "order_no": "51",
+          "site": {
+            "lng": 121.441711,
+            "lat": 31.141402
+          },
+          "arrival_s": 61459,
+          "departure_s": 65959,
+          "sequence": 4,
+          "day": 9,
+          "overflow": true
+        }
+      ],
+      "total_service_s": 25200.0,
+      "total_travel_s": 11959.0,
+      "total_distance_m": 93858.0
+    },
+    {
+      "worker_id": "810e9278-4642-40ac-aac3-533951ed5140",
       "worker_name": "何玉利",
       "day": 10,
       "assignments": [
         {
-          "order_id": "4ff5c0f5-16ef-40f0-93f5-c4f9087388a3",
-          "order_no": "94",
+          "order_id": "9c30bea5-7646-4570-87db-c6121370d3da",
+          "order_no": "96",
           "site": {
-            "lng": 121.3014,
-            "lat": 31.19872
+            "lng": 121.465117,
+            "lat": 31.199803
           },
-          "arrival_s": 30478,
-          "departure_s": 34978,
+          "arrival_s": 31134,
+          "departure_s": 35634,
           "sequence": 0,
           "day": 10,
           "overflow": false
         }
       ],
       "total_service_s": 4500.0,
-      "total_travel_s": 1678.0,
-      "total_distance_m": 16776.05396125817
+      "total_travel_s": 2334.0,
+      "total_distance_m": 38127.0
     },
     {
-      "worker_id": "d4f5b7f2-d3c9-4e7f-9453-65fedd3be655",
+      "worker_id": "08c81167-2085-4506-aece-b3dbed536a4b",
       "worker_name": "杜豪豪",
       "day": 10,
       "assignments": [
         {
-          "order_id": "028bc21b-a247-441e-82e9-2de96fc7cbf3",
-          "order_no": "96",
+          "order_id": "7afd9146-8ad5-424a-9445-f82fe1f2a9c6",
+          "order_no": "94",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.03078
+            "lng": 121.560544,
+            "lat": 31.18363
           },
-          "arrival_s": 31549,
-          "departure_s": 36049,
+          "arrival_s": 31507,
+          "departure_s": 36007,
           "sequence": 0,
           "day": 10,
           "overflow": false
         }
       ],
       "total_service_s": 4500.0,
-      "total_travel_s": 2749.0,
-      "total_distance_m": 27494.336785397663
+      "total_travel_s": 2707.0,
+      "total_distance_m": 41560.0
     },
     {
-      "worker_id": "6058bda7-52f2-4b33-a9e1-d1af583cf989",
-      "worker_name": "赵云",
+      "worker_id": "48922e95-4c80-4fe3-b778-e5a355118db7",
+      "worker_name": "杨德逍",
       "day": 10,
       "assignments": [
         {
-          "order_id": "ca857d86-79a8-473d-9490-5c1a62dd1ab6",
-          "order_no": "87",
-          "site": {
-            "lng": 121.30105,
-            "lat": 31.243945
-          },
-          "arrival_s": 31440,
-          "departure_s": 35040,
-          "sequence": 0,
-          "day": 10,
-          "overflow": false
-        }
-      ],
-      "total_service_s": 3600.0,
-      "total_travel_s": 2640.0,
-      "total_distance_m": 16500.018778548394
-    },
-    {
-      "worker_id": "827acb10-6da0-4eb5-9504-96b4537aebe0",
-      "worker_name": "邱宏靖",
-      "day": 10,
-      "assignments": [
-        {
-          "order_id": "2e1e8e77-95d8-4c9e-9fc8-d663972f77f0",
+          "order_id": "89e7c53b-6804-4d9e-b080-164c8965def6",
           "order_no": "133",
           "site": {
-            "lng": 121.30175,
-            "lat": 31.29412
+            "lng": 121.415655,
+            "lat": 31.1538
           },
-          "arrival_s": 31649,
-          "departure_s": 35249,
+          "arrival_s": 30944,
+          "departure_s": 34544,
           "sequence": 0,
           "day": 10,
           "overflow": false
         }
       ],
       "total_service_s": 3600.0,
-      "total_travel_s": 2849.0,
-      "total_distance_m": 17808.748023658794
+      "total_travel_s": 2144.0,
+      "total_distance_m": 20432.0
+    },
+    {
+      "worker_id": "56eb7955-9f0a-4204-b883-982cd126900f",
+      "worker_name": "王意江",
+      "day": 10,
+      "assignments": [
+        {
+          "order_id": "62f01d71-1ec7-4914-83ec-2359deeb40f0",
+          "order_no": "87",
+          "site": {
+            "lng": 121.544346,
+            "lat": 31.221461
+          },
+          "arrival_s": 32784,
+          "departure_s": 36384,
+          "sequence": 0,
+          "day": 10,
+          "overflow": false
+        }
+      ],
+      "total_service_s": 3600.0,
+      "total_travel_s": 3984.0,
+      "total_distance_m": 29695.0
     }
   ],
   "unassigned_orders": [],
   "status": "optimal",
-  "objective_value": 312861.0,
+  "objective_value": 370093.0,
   "solve_time_s": null,
-  "created_at": "2026-10-05T06:55:16.970256Z",
+  "created_at": "2026-10-06T01:20:58.657067Z",
   "metadata": {
     "engine": "greedy-multi-day",
     "note": "greedy-multi-day",
@@ -2480,51 +2480,51 @@
       },
       {
         "day": 2,
-        "assigned": 7,
-        "service_hours": 66.5,
-        "assigned_amount": 6051.0
+        "assigned": 9,
+        "service_hours": 82.0,
+        "assigned_amount": 7507.0
       },
       {
         "day": 3,
         "assigned": 12,
-        "service_hours": 87.25,
-        "assigned_amount": 8236.0
+        "service_hours": 85.25,
+        "assigned_amount": 8041.0
       },
       {
         "day": 4,
         "assigned": 12,
-        "service_hours": 72.75,
-        "assigned_amount": 6701.0
+        "service_hours": 70.25,
+        "assigned_amount": 6566.0
       },
       {
         "day": 5,
         "assigned": 12,
-        "service_hours": 62.0,
-        "assigned_amount": 6216.0
+        "service_hours": 60.0,
+        "assigned_amount": 5911.0
       },
       {
         "day": 6,
         "assigned": 17,
-        "service_hours": 70.75,
-        "assigned_amount": 6806.0
+        "service_hours": 69.25,
+        "assigned_amount": 6861.0
       },
       {
         "day": 7,
         "assigned": 18,
-        "service_hours": 58.25,
-        "assigned_amount": 5534.0
+        "service_hours": 56.75,
+        "assigned_amount": 5334.0
       },
       {
         "day": 8,
-        "assigned": 21,
+        "assigned": 22,
         "service_hours": 54.75,
-        "assigned_amount": 5963.0
+        "assigned_amount": 5826.0
       },
       {
         "day": 9,
-        "assigned": 35,
-        "service_hours": 50.5,
-        "assigned_amount": 5350.0
+        "assigned": 32,
+        "service_hours": 44.5,
+        "assigned_amount": 4811.0
       },
       {
         "day": 10,
@@ -2538,173 +2538,6 @@
       "assigned": 60462.0,
       "unassigned": 0.0,
       "total": 60462.0
-    },
-    "config": {
-      "run_at": "2026-10-05T06:55:16.970256+00:00",
-      "mode": "multi-day greedy (as many days as needed, fill each day)",
-      "engine": "greedy-multi-day",
-      "city": "上海",
-      "coords_source": "synthetic",
-      "matrix_source": "",
-      "day_window": "08:00-18:00   (10.0h / worker / day)",
-      "day_window_seconds": [
-        28800,
-        64800
-      ],
-      "days_used": 10,
-      "termination": "all-scheduled",
-      "allow_overflow": 1,
-      "drop_by": "time",
-      "penalty_base": 10000000.0,
-      "per_hour_k": 1.0,
-      "warn_qty": 5,
-      "max_days": 3650,
-      "timeout_s": null,
-      "counts": {
-        "total": 144,
-        "assigned": 144,
-        "unassigned": 0,
-        "removed": 22,
-        "qty_warnings": 2
-      },
-      "amounts": {
-        "assigned": 60462.0,
-        "unassigned": 0.0,
-        "total": 60462.0
-      },
-      "utilization_pct": 100.0,
-      "depot_fallback": "121.4737,31.2304",
-      "unassigned_reasons": {},
-      "day_summary": [
-        {
-          "day": 1,
-          "assigned": 6,
-          "service_hours": 86.75,
-          "assigned_amount": 9048.0
-        },
-        {
-          "day": 2,
-          "assigned": 7,
-          "service_hours": 66.5,
-          "assigned_amount": 6051.0
-        },
-        {
-          "day": 3,
-          "assigned": 12,
-          "service_hours": 87.25,
-          "assigned_amount": 8236.0
-        },
-        {
-          "day": 4,
-          "assigned": 12,
-          "service_hours": 72.75,
-          "assigned_amount": 6701.0
-        },
-        {
-          "day": 5,
-          "assigned": 12,
-          "service_hours": 62.0,
-          "assigned_amount": 6216.0
-        },
-        {
-          "day": 6,
-          "assigned": 17,
-          "service_hours": 70.75,
-          "assigned_amount": 6806.0
-        },
-        {
-          "day": 7,
-          "assigned": 18,
-          "service_hours": 58.25,
-          "assigned_amount": 5534.0
-        },
-        {
-          "day": 8,
-          "assigned": 21,
-          "service_hours": 54.75,
-          "assigned_amount": 5963.0
-        },
-        {
-          "day": 9,
-          "assigned": 35,
-          "service_hours": 50.5,
-          "assigned_amount": 5350.0
-        },
-        {
-          "day": 10,
-          "assigned": 4,
-          "service_hours": 4.5,
-          "assigned_amount": 557.0
-        }
-      ],
-      "workers": [
-        {
-          "name": "何玉利",
-          "transport": "car_sh",
-          "home": "121.4737,31.2304",
-          "home_source": "回退中心 depot",
-          "available_start": "",
-          "available_end": "",
-          "max_orders": 20,
-          "capacity": null,
-          "stops_all_days": 25
-        },
-        {
-          "name": "杜豪豪",
-          "transport": "car_sh",
-          "home": "121.4737,31.2304",
-          "home_source": "回退中心 depot",
-          "available_start": "",
-          "available_end": "",
-          "max_orders": 20,
-          "capacity": null,
-          "stops_all_days": 25
-        },
-        {
-          "name": "邱宏靖",
-          "transport": "ebike",
-          "home": "121.4737,31.2304",
-          "home_source": "回退中心 depot",
-          "available_start": "",
-          "available_end": "",
-          "max_orders": 20,
-          "capacity": null,
-          "stops_all_days": 24
-        },
-        {
-          "name": "赵云",
-          "transport": "ebike",
-          "home": "121.4737,31.2304",
-          "home_source": "回退中心 depot",
-          "available_start": "",
-          "available_end": "",
-          "max_orders": 20,
-          "capacity": null,
-          "stops_all_days": 24
-        },
-        {
-          "name": "杨德逍",
-          "transport": "ebike",
-          "home": "121.4737,31.2304",
-          "home_source": "回退中心 depot",
-          "available_start": "",
-          "available_end": "",
-          "max_orders": 20,
-          "capacity": null,
-          "stops_all_days": 22
-        },
-        {
-          "name": "王意江",
-          "transport": "ebike",
-          "home": "121.4737,31.2304",
-          "home_source": "回退中心 depot",
-          "available_start": "",
-          "available_end": "",
-          "max_orders": 20,
-          "capacity": null,
-          "stops_all_days": 24
-        }
-      ]
     }
   }
 }

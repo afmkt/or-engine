@@ -32,6 +32,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import __version__
 from .excel import export_result, import_workers
 from .models import DispatchResult, Order, Point2D, Worker
 from .spatial.amap import AmapClient, AmapAPIError
@@ -39,7 +40,7 @@ from .spatial.api_error import record_geocode_failure, record_direction_failure
 from .spatial.failures import FailureTracker
 from .spatial.travel import TravelMatrix, build_travel_matrix
 from .storage.cache import LocalCache
-from .solver import solve_dispatch
+from .solver import solve_dispatch, solve_dispatch_multi
 from .tasks import RemovedTask, import_tasks, load_working_hours
 
 # -- defaults (project decisions) -------------------------------------------
@@ -484,40 +485,81 @@ async def step_matrix(st: State, mode: str, out: Path,
 # -- step 6: solve ----------------------------------------------------------
 def step_solve(st: State, args, out: Path) -> None:
     day_start, day_end = hhmm_seconds(args.day_start), hhmm_seconds(args.day_end)
-    for w in st.workers:
-        w.available_start = day_start
-        w.available_end = day_end
-        if args.max_orders is not None:
-            w.max_orders = args.max_orders
-    for o in st.orders:                       # every task is droppable (partial VRP)
+    max_days = getattr(args, "max_days", 1)
+
+    # every task is droppable (partial VRP)
+    for o in st.orders:
         s = int(round(o.service_hours * 3600))
         o.drop_penalty = (args.penalty_base if args.drop_by == "count"
                           else args.penalty_base + args.per_hour_k * s)
         o.optional = True
-    engine = "ortools"
-    res = solve_dispatch(st.workers, st.orders, st.matrix,
-                         timeout_s=args.timeout_s, force_optional=True)
-    engine = (res.metadata or {}).get("note") or "ortools"
-    st.result = res
-    assigned = sum(len(r.assignments) for r in res.routes)
-    dropped = len(res.unassigned_orders)
-    total_svc = sum(o.service_hours for o in st.orders)
-    cap = len(st.workers) * (day_end - day_start) / 3600.0
-    print(f"[6/7] solve          engine={engine}  status={res.status.value}")
-    print(f"       within {args.day_start}-{args.day_end}: "
-          f" {assigned}/{len(st.orders)} tasks scheduled, "
-          f" {dropped} dropped   "
-          f"(penalty {'∝ task time' if args.drop_by == 'time' else '∝ count'})")
-    print(f"       total on-site service = {total_svc:.1f} h  vs capacity {cap:.0f} h  "
-          f"({total_svc/max(cap,1):.1f}x)   |  travel_obj={res.objective_value:.0f}s  "
-          f"solve_time={res.solve_time_s}s")
-    for r in res.routes:
-        if r.assignments:
-            lo, hi = r.assignments[0].arrival_s, r.assignments[-1].departure_s
-            span = f"{hms(lo)}\u2192{hms(hi)}"
-        else:
-            span = "(idle)"
-        print(f"         {r.worker_name:<8} {len(r.assignments)} stops    {span}")
+
+    if max_days > 1:
+        # -- multi-day greedy: fill workers across up to max_days --
+        res = solve_dispatch_multi(
+            st.workers, st.orders, st.matrix,
+            day_start=day_start, day_end=day_end, max_days=max_days,
+        )
+        engine = (res.metadata or {}).get("note") or "greedy-multi-day"
+        st.result = res
+        assigned = sum(len(r.assignments) for r in res.routes)
+        dropped = len(res.unassigned_orders)
+        total_svc = sum(o.service_hours for o in st.orders)
+        days_used = (res.metadata or {}).get("n_days", 1)
+        cap = len(st.workers) * (day_end - day_start) / 3600.0
+        cap_total = cap * days_used
+        print(f"[6/7] solve          engine={engine}  status={res.status.value}")
+        print(f"       multi-day ({days_used} day(s)) "
+              f"window {args.day_start}-{args.day_end}: "
+              f"{assigned}/{len(st.orders)} tasks scheduled, "
+              f"{dropped} dropped")
+        print(f"       total service = {total_svc:.1f} h "
+              f"vs capacity {cap_total:.0f} h "
+              f"({days_used}d x {len(st.workers)}w x {cap:.0f}h) "
+              f"({total_svc/max(cap_total,1):.1f}x) "
+              f"travel={res.objective_value:.0f}s")
+        for r in res.routes:
+            if r.assignments:
+                lo, hi = r.assignments[0].arrival_s, r.assignments[-1].departure_s
+                span = f"{hms(lo)}\u2192{hms(hi)}"
+            else:
+                span = "(idle)"
+            print(f"          Day{r.day} {r.worker_name:<8} "
+                  f"{len(r.assignments)} stops     {span}")
+    else:
+        # -- single-day OR-Tools VRPTW --
+        for w in st.workers:
+            w.available_start = day_start
+            w.available_end = day_end
+            if args.max_orders is not None:
+                w.max_orders = args.max_orders
+        res = solve_dispatch(st.workers, st.orders, st.matrix,
+                             timeout_s=args.timeout_s, force_optional=True)
+        engine = (res.metadata or {}).get("note") or "ortools"
+        st.result = res
+        assigned = sum(len(r.assignments) for r in res.routes)
+        dropped = len(res.unassigned_orders)
+        total_svc = sum(o.service_hours for o in st.orders)
+        cap = len(st.workers) * (day_end - day_start) / 3600.0
+        drop_label = "\u221d task time" if args.drop_by == "time" else "\u221d count"
+        print(f"[6/7] solve          engine={engine}  status={res.status.value}")
+        print(f"       within {args.day_start}-{args.day_end}: "
+              f" {assigned}/{len(st.orders)} tasks scheduled, "
+              f" {dropped} dropped     (penalty {drop_label})")
+        print(f"       total on-site service = {total_svc:.1f} h "
+              f"vs capacity {cap:.0f} h "
+              f"({total_svc/max(cap,1):.1f}x) "
+              f"travel_obj={res.objective_value:.0f}s "
+              f"solve_time={res.solve_time_s}s")
+        for r in res.routes:
+            if r.assignments:
+                lo, hi = r.assignments[0].arrival_s, r.assignments[-1].departure_s
+                span = f"{hms(lo)}\u2192{hms(hi)}"
+            else:
+                span = "(idle)"
+            print(f"           {r.worker_name:<8} "
+                  f"{len(r.assignments)} stops     {span}")
+
     _save(out, "result", st)
 
 
@@ -677,6 +719,8 @@ def _add_common(sp: argparse.ArgumentParser) -> None:
     sp.add_argument("--day-end", default=DEFAULT_DAY_END)
     sp.add_argument("--max-orders", type=int, default=None,
                     help="per-worker cap; default = unbounded (18:00 binds)")
+    sp.add_argument("--max-days", type=int, default=1,
+                        help="max scheduling days (default 1 = single-day; >1 uses multi-day greedy)")
     sp.add_argument("--timeout-s", type=float, default=None,
                     help="OR-Tools wall-clock budget; default = run until done")
     sp.add_argument("--warn-qty", type=int, default=DEFAULT_WARN_QTY,
@@ -702,11 +746,56 @@ def _add_common(sp: argparse.ArgumentParser) -> None:
                     help="wipe api_failures.json; after fixing root cause")
 
 
+_EPILOG = """\
+commands (the 7-step pipeline; each step is also a standalone sub-command):
+  hours      [1/7] working_hours.xlsx -> product->hours lookup
+  workers    [2/7] workers.xlsx       -> Worker[]
+  tasks      [3/7] tasks.xlsx + hours -> kept orders (+ removed / qty reports)
+  geocode    [4/7] fill lat/lng for every order + worker (AMap or synthetic)
+  matrix     [5/7] build the pairwise travel-time matrix (AMap / euclidean)
+  solve      [6/7] OR-Tools VRPTW-with-drop -> DispatchResult
+  export     [7/7] write result.xlsx (+ 移除 / 数量警告 sheets)
+  run             chain all seven steps end-to-end
+
+Each sub-command reads/writes JSON checkpoints in --workdir (default ./_run),
+so a single step can be run, inspected and re-run in isolation; 'run' just
+threads the same in-memory state through all of them in order.
+
+Common options (full list shown by '<cmd> --help'): -w/--workers -t/--tasks
+-H/--hours --city --out --workdir --day-start/--day-end --max-orders --max-days
+--drop-by --coords --matrix --concurrency --max-retries --cache.
+
+examples:
+   # full end-to-end run (offline: no AMAP_API_KEY -> synthetic coords + euclidean)
+  or-engine run --out result.xlsx
+
+   # full run with a real AMap key, caching geocode/travel results to SQLite
+  AMAP_API_KEY=... or-engine run --cache ./_run/cache.db
+
+   # run one step at a time, inspecting the JSON checkpoints in ./_run as you go
+  or-engine hours
+  or-engine geocode --coords auto
+  or-engine matrix   --matrix auto
+  or-engine solve    --max-days 3 --drop-by time
+  or-engine export   --out result_3day.xlsx
+
+environment:
+  AMAP_API_KEY  AMap (高德) key. If unset, geocode/matrix fall back to a
+                deterministic synthetic-coordinate / euclidean matrix, so the
+                demo still runs end-to-end offline (clearly labelled).
+"""
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
+        prog="or-engine",
         description="Single-day VRPTW-with-drop dispatch pipeline "
-                      "(pure data transform + AMap + OR-Tools; no DB / cache).",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                      "(pure data transform + AMap + OR-Tools; no DB / cache). "
+                         "See each sub-command's --help for its options.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=_EPILOG,
+    )
+    p.add_argument("--version", action="version",
+                    version=f"%(prog)s {__version__}")
     sub = p.add_subparsers(dest="cmd")
     _desc = {
           "hours": "step 1: working_hours.xlsx -> product->hours lookup",
@@ -719,7 +808,9 @@ def build_parser() -> argparse.ArgumentParser:
           "run": "run all seven steps end-to-end",
       }
     for name in ("hours", "workers", "tasks", "geocode", "matrix", "solve", "export", "run"):
-        sp = sub.add_parser(name, help=_desc[name])
+        sp = sub.add_parser(
+            name, help=_desc[name], description=_desc[name],
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         _add_common(sp)
     return p
 
